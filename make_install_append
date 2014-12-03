@@ -1,0 +1,13 @@
+%post
+# all of below should be a pretrans lua script
+# in the filesystem package...
+# All mock configs should have:
+#    config_opts['extra_chroot_dirs'] = [ '/run/lock', ]
+# But some of them may not.
+mkdir -p /run/lock
+chmod 1777 /run/lock
+# Host yum puts pidfile into <chroot>/var/run/ this then makes cpio go
+# caboom trying to convert non-empty directory into a symlink
+mv /var/run/* /run 1>&2
+rmdir /var/run 1>&2
+ln -sf ../run /var/run 1>&2
