@@ -4,7 +4,7 @@
 #
 Name     : coreutils
 Version  : 8.24
-Release  : 21
+Release  : 22
 URL      : http://ftp.gnu.org/gnu/coreutils/coreutils-8.24.tar.xz
 Source0  : http://ftp.gnu.org/gnu/coreutils/coreutils-8.24.tar.xz
 Summary  : No detailed summary available
