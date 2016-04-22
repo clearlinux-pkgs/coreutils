@@ -1,1 +1,2 @@
---enable-no-install-program=kill,groups
+--enable-no-install-program=kill,groups 
+--with-openssl
