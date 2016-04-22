@@ -4,7 +4,7 @@
 #
 Name     : coreutils
 Version  : 8.25
-Release  : 23
+Release  : 24
 URL      : http://ftp.gnu.org/gnu/coreutils/coreutils-8.25.tar.xz
 Source0  : http://ftp.gnu.org/gnu/coreutils/coreutils-8.25.tar.xz
 Summary  : No detailed summary available
@@ -16,6 +16,7 @@ Requires: coreutils-locales
 BuildRequires : acl-dev
 BuildRequires : attr-dev
 BuildRequires : gmp-dev
+BuildRequires : libcap-dev
 Patch1: 0001-df-test-Do-not-attempt-to-use-the-local-disks-during.patch
 
 %description
@@ -51,8 +52,10 @@ locales components for the coreutils package.
 %patch1 -p1
 
 %build
-export CFLAGS="$CFLAGS -Os -ffunction-sections "
-export CXXFLAGS="$CXXFLAGS -Os -ffunction-sections "
+export CFLAGS="$CFLAGS -ffunction-sections -Os "
+export FCFLAGS="$CFLAGS -ffunction-sections -Os "
+export FFLAGS="$CFLAGS -ffunction-sections -Os "
+export CXXFLAGS="$CXXFLAGS -ffunction-sections -Os "
 %configure --disable-static --enable-no-install-program=kill,groups
 make V=1  %{?_smp_mflags}
 
