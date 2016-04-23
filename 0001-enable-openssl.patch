@@ -1,0 +1,31 @@
+From e8568f5917c4667dc47d3cbbb24df647e703e562 Mon Sep 17 00:00:00 2001
+From: Victor Rodriguez <victor.rodriguez.bahena@intel.com>
+Date: Fri, 22 Apr 2016 23:54:01 +0000
+Subject: [PATCH coreutils 1/2] enable openssl
+
+Signed-off-by: Victor Rodriguez <victor.rodriguez.bahena@intel.com>
+---
+ buildreq_add | 1 +
+ configure    | 3 ++-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/buildreq_add b/buildreq_add
+index 40dd16e..fb29d4f 100644
+--- a/buildreq_add
++++ b/buildreq_add
+@@ -6,3 +6,4 @@ acl-dev
+ attr-dev
+ gmp-dev
+ libcap-dev
++openssl-dev
+diff --git a/configure b/configure
+index c4b4453..b33141f 100644
+--- a/configure
++++ b/configure
+@@ -1 +1,2 @@
+---enable-no-install-program=kill,groups
++--enable-no-install-program=kill,groups 
++--with-openssl
+-- 
+2.8.1
+
