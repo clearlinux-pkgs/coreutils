@@ -4,7 +4,7 @@
 #
 Name     : coreutils
 Version  : 8.25
-Release  : 26
+Release  : 27
 URL      : http://ftp.gnu.org/gnu/coreutils/coreutils-8.25.tar.xz
 Source0  : http://ftp.gnu.org/gnu/coreutils/coreutils-8.25.tar.xz
 Summary  : No detailed summary available
@@ -17,7 +17,6 @@ BuildRequires : acl-dev
 BuildRequires : attr-dev
 BuildRequires : gmp-dev
 BuildRequires : libcap-dev
-BuildRequires : openssl-dev
 Patch1: 0001-df-test-Do-not-attempt-to-use-the-local-disks-during.patch
 
 %description
@@ -58,8 +57,7 @@ export CFLAGS="$CFLAGS -Os -ffunction-sections "
 export FCFLAGS="$CFLAGS -Os -ffunction-sections "
 export FFLAGS="$CFLAGS -Os -ffunction-sections "
 export CXXFLAGS="$CXXFLAGS -Os -ffunction-sections "
-%configure --disable-static --enable-no-install-program=kill,groups \
---with-openssl
+%configure --disable-static --enable-no-install-program=kill,groups
 make V=1  %{?_smp_mflags}
 
 %check
