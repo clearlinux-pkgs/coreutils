@@ -5,11 +5,11 @@
 # Source0 file verified with key 0xDF6FD971306037D9 (P@draigBrady.com)
 #
 Name     : coreutils
-Version  : 8.26
-Release  : 32
-URL      : http://ftp.gnu.org/gnu/coreutils/coreutils-8.26.tar.xz
-Source0  : http://ftp.gnu.org/gnu/coreutils/coreutils-8.26.tar.xz
-Source99 : http://ftp.gnu.org/gnu/coreutils/coreutils-8.26.tar.xz.sig
+Version  : 8.27
+Release  : 33
+URL      : http://ftp.gnu.org/gnu/coreutils/coreutils-8.27.tar.xz
+Source0  : http://ftp.gnu.org/gnu/coreutils/coreutils-8.27.tar.xz
+Source99 : http://ftp.gnu.org/gnu/coreutils/coreutils-8.27.tar.xz.sig
 Summary  : No detailed summary available
 Group    : Development/Tools
 License  : GFDL-1.3 GPL-3.0 GPL-3.0+
@@ -51,12 +51,12 @@ locales components for the coreutils package.
 
 
 %prep
-%setup -q -n coreutils-8.26
+%setup -q -n coreutils-8.27
 %patch1 -p1
 
 %build
 export LANG=C
-export SOURCE_DATE_EPOCH=1485453054
+export SOURCE_DATE_EPOCH=1489509593
 export CFLAGS="$CFLAGS -Os -ffunction-sections "
 export FCFLAGS="$CFLAGS -Os -ffunction-sections "
 export FFLAGS="$CFLAGS -Os -ffunction-sections "
@@ -72,7 +72,7 @@ export no_proxy=localhost
 make VERBOSE=1 V=1 %{?_smp_mflags} check
 
 %install
-export SOURCE_DATE_EPOCH=1485453054
+export SOURCE_DATE_EPOCH=1489509593
 rm -rf %{buildroot}
 %make_install
 %find_lang coreutils
