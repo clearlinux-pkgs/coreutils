@@ -6,13 +6,13 @@
 #
 Name     : coreutils
 Version  : 8.27
-Release  : 34
+Release  : 35
 URL      : http://ftp.gnu.org/gnu/coreutils/coreutils-8.27.tar.xz
 Source0  : http://ftp.gnu.org/gnu/coreutils/coreutils-8.27.tar.xz
 Source99 : http://ftp.gnu.org/gnu/coreutils/coreutils-8.27.tar.xz.sig
 Summary  : No detailed summary available
 Group    : Development/Tools
-License  : GFDL-1.3 GPL-3.0 GPL-3.0+
+License  : GPL-3.0 GPL-3.0+
 Requires: coreutils-bin
 Requires: coreutils-doc
 Requires: coreutils-locales
@@ -55,12 +55,15 @@ locales components for the coreutils package.
 %patch1 -p1
 
 %build
+export http_proxy=http://127.0.0.1:9/
+export https_proxy=http://127.0.0.1:9/
+export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1489509593
-export CFLAGS="$CFLAGS -Os -ffunction-sections "
-export FCFLAGS="$CFLAGS -Os -ffunction-sections "
-export FFLAGS="$CFLAGS -Os -ffunction-sections "
-export CXXFLAGS="$CXXFLAGS -Os -ffunction-sections "
+export SOURCE_DATE_EPOCH=1495058743
+export CFLAGS="$CFLAGS -Os -fdata-sections -ffunction-sections -fno-semantic-interposition "
+export FCFLAGS="$CFLAGS -Os -fdata-sections -ffunction-sections -fno-semantic-interposition "
+export FFLAGS="$CFLAGS -Os -fdata-sections -ffunction-sections -fno-semantic-interposition "
+export CXXFLAGS="$CXXFLAGS -Os -fdata-sections -ffunction-sections -fno-semantic-interposition "
 %configure --disable-static --enable-no-install-program=kill,groups
 make V=1  %{?_smp_mflags}
 
@@ -68,22 +71,14 @@ make V=1  %{?_smp_mflags}
 export LANG=C
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
-export no_proxy=localhost
+export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check
 
 %install
-export SOURCE_DATE_EPOCH=1489509593
+export SOURCE_DATE_EPOCH=1495058743
 rm -rf %{buildroot}
 %make_install
 %find_lang coreutils
-## make_install_append content
-%post
-mkdir -p /run/lock
-chmod 1777 /run/lock
-mv /var/run/* /run 1>&2
-rmdir /var/run 1>&2
-ln -sf ../run /var/run 1>&2
-## make_install_append end
 
 %files
 %defattr(-,root,root,-)
