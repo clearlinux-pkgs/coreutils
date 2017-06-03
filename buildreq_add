@@ -6,3 +6,4 @@ acl-dev
 attr-dev
 gmp-dev
 libcap-dev
+valgrind
