@@ -6,7 +6,7 @@
 #
 Name     : coreutils
 Version  : 8.27
-Release  : 39
+Release  : 40
 URL      : http://ftp.gnu.org/gnu/coreutils/coreutils-8.27.tar.xz
 Source0  : http://ftp.gnu.org/gnu/coreutils/coreutils-8.27.tar.xz
 Source99 : http://ftp.gnu.org/gnu/coreutils/coreutils-8.27.tar.xz.sig
@@ -60,7 +60,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1496513329
+export SOURCE_DATE_EPOCH=1496533246
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
@@ -68,7 +68,7 @@ export CFLAGS="$CFLAGS -O3 -Os -Wl,--gc-sections -fdata-sections -ffat-lto-objec
 export FCFLAGS="$CFLAGS -O3 -Os -Wl,--gc-sections -fdata-sections -ffat-lto-objects -ffunction-sections -flto -fno-semantic-interposition "
 export FFLAGS="$CFLAGS -O3 -Os -Wl,--gc-sections -fdata-sections -ffat-lto-objects -ffunction-sections -flto -fno-semantic-interposition "
 export CXXFLAGS="$CXXFLAGS -O3 -Os -Wl,--gc-sections -fdata-sections -ffat-lto-objects -ffunction-sections -flto -fno-semantic-interposition "
-%configure --disable-static --enable-no-install-program=kill,groups --enable-single-binary=symlinks --enable-single-binary-exceptions=expr,factor
+%configure --disable-static --enable-no-install-program=kill,groups --enable-single-binary=symlinks --enable-single-binary-exceptions=expr,factor,rm
 make V=1  %{?_smp_mflags}
 
 %check
@@ -79,7 +79,7 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check
 
 %install
-export SOURCE_DATE_EPOCH=1496513329
+export SOURCE_DATE_EPOCH=1496533246
 rm -rf %{buildroot}
 %make_install
 %find_lang coreutils
