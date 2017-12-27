@@ -5,11 +5,11 @@
 # Source0 file verified with key 0xDF6FD971306037D9 (P@draigBrady.com)
 #
 Name     : coreutils
-Version  : 8.28
-Release  : 41
-URL      : http://ftp.gnu.org/gnu/coreutils/coreutils-8.28.tar.xz
-Source0  : http://ftp.gnu.org/gnu/coreutils/coreutils-8.28.tar.xz
-Source99 : http://ftp.gnu.org/gnu/coreutils/coreutils-8.28.tar.xz.sig
+Version  : 8.29
+Release  : 42
+URL      : http://ftp.gnu.org/gnu/coreutils/coreutils-8.29.tar.xz
+Source0  : http://ftp.gnu.org/gnu/coreutils/coreutils-8.29.tar.xz
+Source99 : http://ftp.gnu.org/gnu/coreutils/coreutils-8.29.tar.xz.sig
 Summary  : No detailed summary available
 Group    : Development/Tools
 License  : GPL-3.0 GPL-3.0+
@@ -52,7 +52,7 @@ locales components for the coreutils package.
 
 
 %prep
-%setup -q -n coreutils-8.28
+%setup -q -n coreutils-8.29
 %patch1 -p1
 
 %build
@@ -60,7 +60,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1504339227
+export SOURCE_DATE_EPOCH=1514402042
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
@@ -69,7 +69,7 @@ export FCFLAGS="$CFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sec
 export FFLAGS="$CFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition "
 export CXXFLAGS="$CXXFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition "
 %configure --disable-static --enable-no-install-program=kill,groups --enable-single-binary=symlinks --enable-single-binary-exceptions=expr,factor,rm
-make V=1  %{?_smp_mflags}
+make  %{?_smp_mflags}
 
 %check
 export LANG=C
@@ -79,7 +79,7 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check
 
 %install
-export SOURCE_DATE_EPOCH=1504339227
+export SOURCE_DATE_EPOCH=1514402042
 rm -rf %{buildroot}
 %make_install
 %find_lang coreutils

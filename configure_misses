@@ -5,8 +5,6 @@ Configure miss: __freadptrinc
 Configure miss: __fseterr
 Configure miss: microuptime
 Configure miss: nanouptime
-Configure miss: getprogname
-Configure miss: getexecname
 Configure miss: mbslen
 Configure miss: pthread_sigmask
 Configure miss: directio
@@ -15,7 +13,6 @@ Configure miss: getgrnam_nomembers
 Configure miss: getgrent_nomembers
 Configure miss: sys/fs_types.h
 Configure miss: crtdefs.h
-Configure miss: xlocale.h
 Configure miss: priv.h
 Configure miss: selinux/selinux.h
 Configure miss: hurd.h
@@ -24,10 +21,6 @@ Configure miss: st_dm_mode in struct stat
 Configure miss: whether strmode is declared
 Configure miss: whether fflush works on input streams
 Configure miss: arithmetic hrtime_t
-Configure miss: whether wint_t is too small
-Configure miss: whether stdint.h predates C++11
-Configure miss: whether the C locale is free of encoding errors
-Configure miss: whether <limits.h> defines MIN and MAX
 Configure miss: desired default level of POSIX conformance
 Configure miss: library containing setfilecon
 Configure miss: strerror_r with POSIX signature
@@ -49,14 +42,10 @@ Configure miss: dustat.h
 Configure miss: sys/fs/s5param.h usability
 Configure miss: sys/fs/s5param.h presence
 Configure miss: sys/fs/s5param.h
-Configure miss: sys/filsys.h usability
-Configure miss: sys/filsys.h presence
-Configure miss: sys/filsys.h
 Configure miss: statfs that truncates block counts
 Configure miss: whether gai_strerrorA is declared
 Configure miss: whether getcwd aborts when 4k < cwd_length < 16k
 Configure miss: whether gethrtime is declared
-Configure miss: whether __argv is declared
 Configure miss: isapipe
 Configure miss: __xpg4
 Configure miss: whether link(2) dereferences a symlink
@@ -64,14 +53,12 @@ Configure miss: whether pthread_rwlock_rdlock prefers a writer to a reader
 Configure miss: whether mbswidth is declared in <wchar.h>
 Configure miss: __mktime_internal
 Configure miss: listmntent
-Configure miss: sys/ucred.h
 Configure miss: struct fsstat.f_fstypename
 Configure miss: listmntent of Cray/Unicos-9
 Configure miss: mntctl function and struct vmount
 Configure miss: sys/mntent.h usability
 Configure miss: sys/mntent.h presence
 Configure miss: sys/mntent.h
-Configure miss: struct statfs.f_fstypename
 Configure miss: working nanosleep
 Configure miss: sys/sysmp.h
 Configure miss: sched_getaffinity_np
@@ -105,8 +92,6 @@ Configure miss: matchpathcon_init_prefix
 Configure miss: nfs/vfs.h usability
 Configure miss: nfs/vfs.h presence
 Configure miss: nfs/vfs.h
-Configure miss: struct statvfs.f_basetype
-Configure miss: struct statvfs.f_fstypename
 Configure miss: struct statvfs.f_type
 Configure miss: struct statfs.f_namemax
 Configure miss: whether localtime caches TZ
