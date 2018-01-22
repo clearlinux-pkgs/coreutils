@@ -6,7 +6,7 @@
 #
 Name     : coreutils
 Version  : 8.29
-Release  : 42
+Release  : 43
 URL      : http://ftp.gnu.org/gnu/coreutils/coreutils-8.29.tar.xz
 Source0  : http://ftp.gnu.org/gnu/coreutils/coreutils-8.29.tar.xz
 Source99 : http://ftp.gnu.org/gnu/coreutils/coreutils-8.29.tar.xz.sig
@@ -20,8 +20,11 @@ BuildRequires : acl-dev
 BuildRequires : attr-dev
 BuildRequires : gmp-dev
 BuildRequires : libcap-dev
+BuildRequires : texinfo
 BuildRequires : valgrind
 Patch1: 0001-df-test-Do-not-attempt-to-use-the-local-disks-during.patch
+Patch2: cve-2017-18018.patch
+Patch3: cve-2017-18018-1.patch
 
 %description
 These are the GNU core utilities.  This package is the union of
@@ -54,20 +57,22 @@ locales components for the coreutils package.
 %prep
 %setup -q -n coreutils-8.29
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1514402042
+export SOURCE_DATE_EPOCH=1516663472
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
-export CFLAGS="$CFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition "
-export FCFLAGS="$CFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition "
-export FFLAGS="$CFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition "
-export CXXFLAGS="$CXXFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition "
+export CFLAGS="$CFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition -fstack-protector-strong "
+export FCFLAGS="$CFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition -fstack-protector-strong "
+export FFLAGS="$CFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition -fstack-protector-strong "
+export CXXFLAGS="$CXXFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition -fstack-protector-strong "
 %configure --disable-static --enable-no-install-program=kill,groups --enable-single-binary=symlinks --enable-single-binary-exceptions=expr,factor,rm
 make  %{?_smp_mflags}
 
@@ -79,7 +84,7 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check
 
 %install
-export SOURCE_DATE_EPOCH=1514402042
+export SOURCE_DATE_EPOCH=1516663472
 rm -rf %{buildroot}
 %make_install
 %find_lang coreutils
