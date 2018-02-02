@@ -6,7 +6,7 @@
 #
 Name     : coreutils
 Version  : 8.29
-Release  : 43
+Release  : 44
 URL      : http://ftp.gnu.org/gnu/coreutils/coreutils-8.29.tar.xz
 Source0  : http://ftp.gnu.org/gnu/coreutils/coreutils-8.29.tar.xz
 Source99 : http://ftp.gnu.org/gnu/coreutils/coreutils-8.29.tar.xz.sig
