@@ -78,6 +78,7 @@ Configure miss: selinux/flask.h presence
 Configure miss: selinux/flask.h
 Configure miss: sig2str
 Configure miss: smack_new_label_from_self in -lsmack
+Configure miss: whether localtime loops forever near extrema
 Configure miss: timezone_t
 Configure miss: whether tzset clobbers localtime buffer
 Configure miss: whether use of struct winsize requires sys/ptem.h

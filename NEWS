@@ -1,5 +1,84 @@
 GNU coreutils NEWS                                    -*- outline -*-
 
+* Noteworthy changes in release 8.30 (2018-07-01) [stable]
+
+** Bug fixes
+
+  'cp --symlink SRC DST' will again correctly validate DST.
+  If DST is a regular file and SRC is a symlink to DST,
+  then cp will no longer allow that operation to clobber DST.
+  Also with -d, if DST is a symlink, then it can always be replaced,
+  even if it points to SRC on a separate device.
+  [bugs introduced with coreutils-8.27]
+
+  'cp -n -u' and 'mv -n -u' now consistently ignore the -u option.
+  Previously, this option combination suffered from race conditions
+  that caused -u to sometimes override -n.
+  [bug introduced with coreutils-7.1]
+
+  'cp -a --no-preserve=mode' now sets appropriate default permissions
+  for non regular files like fifos and character device nodes etc.,
+  and leaves mode bits of existing files unchanged.
+  Previously it would have set executable bits on created special files,
+  and set mode bits for existing files as if they had been created.
+  [bug introduced with coreutils-8.20]
+
+  'cp --remove-destination file symlink' now removes the symlink
+  even if it can't be traversed.
+  [bug introduced with --remove-destination in fileutils-4.1.1]
+
+  ls no longer truncates the abbreviated month names that have a
+  display width between 6 and 12 inclusive.  Previously this would have
+  output ambiguous months for Arabic or Catalan locales.
+
+  'ls -aA' is now equivalent to 'ls -A', since -A now overrides -a.
+  [bug introduced in coreutils-5.3.0]
+
+  'mv -n A B' no longer suffers from a race condition that can
+  overwrite a simultaneously-created B.  This bug fix requires
+  platform support for the renameat2 or renameatx_np syscalls, found
+  in recent Linux and macOS kernels.  As a side effect, ‘mv -n A A’
+  now silently does nothing if A exists.
+  [bug introduced with coreutils-7.1]
+
+** Changes in behavior
+
+  'cp --force file symlink' now removes the symlink even if
+  it is self referential.
+
+  ls --color now matches file extensions case insensitively.
+
+** New features
+
+  cp --reflink now supports --reflink=never to enforce a standard copy.
+
+  env supports a new -v/--debug option to show verbose information about
+  each processing step.
+
+  env supports a new -S/--split-string=S option to split a single argument
+  string into multiple arguments. Used to pass multiple arguments in scripts
+  (shebang lines).
+
+  md5sum accepts a new option: --zero (-z) to delimit the output lines with a
+  NUL instead of a newline character.  This also disables file name escaping.
+  This also applies to sha*sum and b2sum.
+
+  rm --preserve-root now supports the --preserve-root=all option to
+  reject any command line argument that is mounted to a separate file system.
+
+** Improvements
+
+  cut supports line lengths up to the max file size on 32 bit systems.
+  Previously only offsets up to SIZE_MAX-1 were supported.
+
+  stat and tail now know about the "exfs" file system, which is a
+  version of XFS.  stat -f --format=%T now reports the file system type,
+  and tail -f uses inotify.
+
+  wc avoids redundant processing of ASCII text in multibyte locales,
+  which is especially significant on macOS.
+
+
 * Noteworthy changes in release 8.29 (2017-12-27) [stable]
 
 ** Bug fixes
@@ -152,15 +231,19 @@ GNU coreutils NEWS                                    -*- outline -*-
 
   expr supports multibyte strings for all string operations.
 
+** Changes in behavior
+
+  tail -f now exits immediately if the output is piped and the reader of
+  the pipe terminates.  That allows `tail -f file | grep -q foo` to return
+  responsively, but does make `tail -f file | :` exit immediately without
+  waiting for data.  Instead one should now `tail -f file | grep -q .`
+
 ** Improvements
 
   mv --verbose now distinguishes rename and copy operations.
 
   stat -f -c %l, used to output the max file name length on a file system,
   is now supported on FreeBSD and OpenBSD.
-
-  tail -f now exits immediately if the output is piped
-  and the reader of the pipe terminates.
 
   tail -f no longer erroneously warns about being ineffective
   when following a single tty, as the simple blocking loop used
@@ -1743,7 +1826,9 @@ GNU coreutils NEWS                                    -*- outline -*-
 
 ** New features
 
-  split accepts the --number option to generate a specific number of files.
+  split accepts the --number/-n option to generate a specific number of
+  files, as well as the --elide-empty-files/-e and --unbuffered/-u
+  options to fine-tune the resulting output.
 
 
 * Noteworthy changes in release 8.7 (2010-11-13) [stable]
@@ -4849,7 +4934,7 @@ packages, see ./old/*/NEWS.
 
 ========================================================================
 
-Copyright (C) 2001-2017 Free Software Foundation, Inc.
+Copyright (C) 2001-2018 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or

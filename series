@@ -1,3 +1,3 @@
 0001-df-test-Do-not-attempt-to-use-the-local-disks-during.patch
-cve-2017-18018.patch
-cve-2017-18018-1.patch
+fix-builderror-automake1-15.patch
+coreutils-8.30-renameatu.patch

@@ -1,4 +1,654 @@
+2018-07-01  Pádraig Brady  <P@draigBrady.com>
+
+	version 8.30
+	* NEWS: Record release date.
+
+2018-06-30  Pádraig Brady  <P@draigBrady.com>
+
+	tests: standardize perl usage in tests
+	* tests/cp/fiemap-FMR.sh: Ensure perl is parameterized to $PERL,
+	and ensure require_perl_ is used, so tests are skipped appropriately.
+	* tests/cp/preserve-gid.sh: Likewise.
+	* tests/du/long-from-unreadable.sh: Likewise.
+	* tests/misc/env-S-script.sh: Likewise.
+	* tests/misc/sort-benchmark-random.sh: Likewise.
+	* tests/rm/deep-2.sh: Likewise.
+
+	maint: copy: avoid new static analyzer warnings
+	* src/copy.c (copy_internal): Use the lint protected src_mode,
+	rather than accessing the src_sb again.  Also unconditionally
+	populate src_sb when !x->move_mode and in lint mode.
+	Reported by Kamil Dudka with coverity and clang analyzer.
+
+	maint: fix recent stale comments and spelling mistakes
+	* doc/coreutils.texi: s/seperator/separator/.
+	* tests/misc/env-S.pl: Likewise.
+	* src/env.c: Fix stale comment.
+
+2018-06-27  Pádraig Brady  <P@draigBrady.com>
+
+	maint: disable overly agressive sc_gitignore_redundant
+	* cfg.mk (sc_gitignore_redundant): Disabled for now as too
+	aggressive flagging entries like /lib/arg-nonnull.h in
+	a newly checked out repo.
+
+	env: adjust diagnostics provided for shebang usage
+	* src/env.c (main): Don't process '-' specially since
+	that causes an issue on the openbsd getopt implementation
+	where a lone '-' is now processed as an option, and anyway
+	it doesn't particuarly help diagnosing common shebang
+	usage issues.  Also don't restrict the extra diagnostics
+	for shebang usage to the case with 3 arguments, as
+	further arguments can be passed to a script.
+	* tests/misc/env-S.pl: Adjust accordingly.
+
+2018-06-27  Assaf Gordon  <assafgordon@gmail.com>
+
+	tests: accept getopt errors without single-quotes
+	On OpenBSD 6.2, invalid single options produce error messages
+	without single quotes:
+
+	    $ ./src/chroot -/
+	    chroot: unknown option -- /
+
+	As opposed to other systems:
+
+	    ./src/chroot: invalid option -- '/'
+
+	Modify the grep search to accept this.
+
+	* tests/misc/usage_vs_getopt.sh (checkprg): Change the grep pattern
+	to accomodate no-single-quotes cases.
+
+2018-06-27  Pádraig Brady  <P@draigBrady.com>
+
+	tests: fix false failures when perl not available
+	* tests/local.mk: Reference the stub that skips perl tests,
+	with the correct path.
+
+	tests: fix false failure with limited shebang lines
+	* tests/misc/env-S-script.sh: Provide a wrapper to
+	emulate shebang processing, but without length limits,
+	which are 127 on Linux for example.
+
+	maint: update gnulib to latest
+	* gnulib: Update to latest, which incorporates
+	a thread linking fix from Bruno Haible,
+	which was seen on newer Ubuntu systems.
+
+2018-06-27  Assaf Gordon  <assafgordon@gmail.com>
+
+	tests: remove unused Data::Dumper perl module
+	The module is not needed anymore (was used during development).
+	Despite being a Perl core module, platforms like CentOS don't install
+	it by default.  Reported by Bruno Haible at
+	https://lists.gnu.org/r/coreutils/2018-06/msg00093.html.
+
+	* tests/misc/csplit-suppress-matched.pl: Remove Data::Dumper.
+
+2018-06-24  Carlos Santos  <casantos@datacom.com.br>
+
+	maint: fix -Werror=suggest-attribute=malloc in expr.c
+	Add attribute 'malloc' to mpz_get_str to prevent
+	the following on GCC 8.1.1
+
+	  src/expr.c:117:1: error: function might be candidate for attribute
+	    'malloc' if it is known to return normally
+	      [-Werror=suggest-attribute=malloc]
+	   mpz_get_str (char const *str, int base, mpz_t z)
+	   ^~~~~~~~~~~
+	  cc1: all warnings being treated as errors
+
+	* src/expr.c (mpz_get_str): Add _GL_ATTRIBUTE_MALLOC.
+
+2018-06-24  Pádraig Brady  <P@draigBrady.com>
+
+	maint: update gnulib to latest
+	* gnulib: Update to latest.
+	* .gitignore: Add new entries.
+	* bootstrap.conf: Enable wchar-single, which will enable more
+	efficient replacements of wcwidth and mbrtowc, as we indicate
+	that the charset will no change between invocations of these functions.
+
+	maint: sync longlong.h from gmp repo
+	* src/longlong.h: Sync changes.  No functional change.
+
+	maint: avoid false positive in src/fs-magic-compare
+	* src/local.mk (fs_normalize_perl_subst): `make src/fs-magic-compare`
+	was reporting incorrectly that AFS was not being handled.
+	Add a mapping to our KAFS identifier.
+	* .gitignore: Add intermediate files from `make src/fs-magic-compare`
+
+2018-06-23  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	tests: initialize fail=0 to avoid "unary operator expected" errors
+	With an uninitialized variable 'fail', the unquoted use like
+	  test $fail = 1
+	lead to the shell error
+	  "unary operator expected".
+
+	The uninitialized 'fail' variable was a side effect of
+	  https://git.sv.gnu.org/cgit/gnulib.git/commit/?id=e91c0d4f9
+	which was pulled into coreutils-v8.26 with
+	  https://git.sv.gnu.org/cgit/coreutils.git/commit/?id=ef9650170
+	Coreutils test code relied and relies on 'fail' to be initialized,
+	so initialize that variable here.
+
+	* tests/local.mk (TESTS_ENVIRONMENT): Initialize fail=0.
+
+2018-06-21  Jim Meyering  <meyering@fb.com>
+
+	maint: do not depend directly on gnulib's now-unused ftello module
+	* bootstrap.conf (gnulib_modules): Remove ftello, since it is
+	no longer used directly, since v8.9-11-geab97b307.
+
+2018-06-20  Pádraig Brady  <P@draigBrady.com>
+
+	tests: provide an option to relax the need for gdb
+	* tests/rm/r-root.sh: gdb provides extra protection,
+	but is not strictly necessary.  So provide an option
+	for maintainers to relax the requirements.
+
+	rm: add --preserve-root=all to protect mounts
+	* src/remove.c (rm_fts): With the --preserve-root=all extension,
+	reject command line arguments that are mount points.
+	* src/remove.h (rm_options): Add preserve_all_root to store config.
+	* src/mv.c (rm_option_init): Init preserve_all_root to false.
+	* src/rm.c (main): Init preserve_all_root as per option.
+	(usage): Describe the new option.
+	* src/remove.c (rm_fts): Lookup the parent device id,
+	and reject the cli argument if a separate file system.
+	* tests/rm/one-file-system.sh: Add a test case.
+	* NEWS: Mention the new feature.
+
+2018-06-20  Adam Borowski  <kilobyte@angband.pl>
+
+	cp: add --reflink=never to force standard copy mode
+	This mode is currently the default, but most if not all users of
+	reflink-capable filesystems want --reflink=auto, which is often
+	encapsulated into an alias.  Adding --reflink=never allows overriding
+	such an alias.
+
+	* doc/coreutils.texi (cp invocation): Describe the new option.
+	* src/cp.c: Support --reflink=never.
+	* tests/cp/reflink-auto.sh: Add a test case.
+	* NEWS: Mention the new feature.
+
+2018-06-20  Assaf Gordon  <assafgordon@gmail.com>
+
+	env: add -S/--split-string option
+	Adopted from FreeBSD's env(1), useful for specifing multiple
+	parameters on a shebang (#!) script line, e.g:
+
+	   #!/usr/bin/env -S perl -w -T
+
+	Discussed in https://lists.gnu.org/r/coreutils/2018-04/msg00011.html
+
+	* src/env.c (valid_escape_sequence,escape_char,scan_varname,
+	  extract_varname,validate_split_str,build_argv,
+	  parse_split_string): New functions.
+	  (main): Process new option and call parse_split_string.
+	  (usage): Mention new option.
+	* tests/misc/env-S.pl: Test new option from the command line.
+	* tests/misc/env-S-script.sh: Test new option from shebang scripts.
+	* tests/local.mk (all_tests): Add new tests.
+	* man/env.x (OPTIONS): Show a brief example of -S usage and point to
+	the full documentation for more information.
+	* doc/coreutils.texi (env invocation): Detail usage of -S/--split-string
+	option.
+	* NEWS: Mention new option.
+
+2018-06-20  Assaf Gordon  <assafgordon@gmail.com>
+
+	env: add -v/--debug option
+	Prints verbose information about each step:
+
+	  $ env -v -uFOO  -C /tmp BAR=BAZ date -u
+	  env: unset:    FOO
+	  env: setenv:   BAR=BAZ
+	  env: chdir:    '/tmp'
+	  env: executing: date
+	  env:    arg[0]= ‘date’
+	  env:    arg[1]= ‘-u’
+	  Sun Apr 22 08:52:30 UTC 2018
+
+	Inspired by FreeBSD's env(1).
+
+	* src/env.c (usage): Mention new option.
+	  (main): Print debug information if requested.
+	* NEWS: Mention new option.
+	* doc/coreutils.texi (env invocation): Mention -v/--debug.
+
+2018-06-20  Assaf Gordon  <assafgordon@gmail.com>
+
+	maint: refactor unsetenv call in env
+	Keep unset envvars (-uFOO) in an array for later deletion,
+	instead of reiterating over argv.  Done in preparation for
+	'-S string' feature. Related to '-u' discussion in
+	https://lists.gnu.org/r/coreutils/2018-04/msg00013.html
+
+	* src/env.c (append_unset_var,unset_envvars): New functions.
+	 (main): Use new functions.
+
+2018-06-20  Kaxandra Labat  <kaxandra.labat@gmail.com>
+
+	ls: ignore case when coloring file extensions
+	* src/ls.c (get_color_indicator): s/STREQ_LEN/c_strncasecmp/
+	* src/dircolors.hin: Remove a now redundant entry.
+	* tests/ls/color-ext.sh: Add a new test.
+	* tests/local.mk: Reference the new test.
+	* NEWS: Mention the change in behavior.
+
+2018-06-20  Pádraig Brady  <P@draigBrady.com>
+
+	md5sum,b2sum,sha*sum: support -z,--zero option
+	* doc/coreutils.texi (md5sum invocation): Describe the new option,
+	and how it's not supported by --check, and how it disables escaping.
+	* src/md5sum.c (delim): A new global to parmeterize the out delimiter.
+	(main): Don't enable file name escaping with -z, and output '\0'.
+	* tests/misc/md5sum-newline.pl: Add a test case.
+	* NEWS: Mention the new feature.
+
+2018-06-20  Pádraig Brady  <P@draigBrady.com>
+
+	wc: optimize processing of ASCII in multi byte locales
+	===== Benchmark setup (on GNU/Linux) ====
+	$ yes áááááááááááááááááááá | head -n100000 > mbc.txt
+	$ yes 12345678901234567890 | head -n100000 > num.txt
+
+	===== Before ====
+	$ time src/wc -Lm < mbc.txt
+	real    0m0.186s
+	$ time src/wc -m < mbc.txt
+	real    0m0.186s
+	$ time src/wc -Lm < num.txt
+	real    0m0.055s
+	$ time src/wc -m < num.txt
+	real    0m0.056s
+
+	==== After ====
+	$ time src/wc -Lm < mbc.txt
+	real    0m0.196s
+	$ time src/wc -m < mbc.txt
+	real    0m0.173s
+	$ time src/wc -Lm < num.txt
+	real    0m0.031s
+	$ time src/wc -m < num.txt
+	real    0m0.028s
+
+	* src/wc.c (wc): Only call wide variant functions like
+	iswprint() and wcwidth() for non is_basic() characters.
+	I.E. non ISO C "basic character set" characters.
+	This is especially significant on OSX where wcwidth()
+	is very expensive (about 10x in tests).
+	* NEWS: Mention the improvement.
+	Suggested by Eric Fischer.
+
+2018-06-14  Paul Eggert  <eggert@cs.ucla.edu>
+
+	doc: port test.1 to doclifter
+	* man/test.x: Use \& instead of quoting (Bug#31803).
+
+2018-06-13  Paul Eggert  <eggert@cs.ucla.edu>
+
+	doc: port man pages to doclifter
+	Problem reported by Eric S. Raymond (Bug#31803).
+	* man/test.x: Add SYNOPSIS section, since help2man
+	understandably gets confused by the square brackets.
+	* src/ln.c (usage): Omit parenthetical "(Nth form)" in usage,
+	as it confuses doclifter.
+
+2018-06-03  Pádraig Brady  <P@draigBrady.com>
+
+	cp: preserve existing permissions with --no-preserve=mode
+	This issue was introduced in commit v8.19-145-g24ebca6
+
+	* src/copy.c (copy_internal): With --no-preserve=mode,
+	only reset permissions for newly created files.
+	(copy_reg): Likewise.
+	* NEWS: Mention the fix.
+	* tests/cp/preserve-mode.sh: Add a test case.
+	Fixes https://bugs.gnu.org/31675
+
+2018-05-29  Pádraig Brady  <P@draigBrady.com>
+
+	tests: fix periodic false failure in month alignment
+	* tests/ls/abmon-align.sh: Base relative month adjustment
+	from the middle of the month, to avoid failures due
+	to months being repeated.
+	Fixes https://bugs.gnu.org/31644
+
+2018-05-25  Bjarni Ingi Gislason  <bjarniig@rhi.hi.is>
+
+	doc: formatting fixes in "du.x" and "rm.x"
+	Avoid warnings from: groff -b -e -mandoc -T utf8 -rF0 -t -w w -z
+
+	* man/du.x: Change ".BR" to ".B" if there is only one argument.
+	Protect an end-of-sentence indicator (.?!) with '\&'
+	if it does not mean an end of a sentence.
+	Change '--' to '\-\-' if it indicates an option.
+	* man/rm.x: Change '\=' to '='.
+
+2018-05-17  Pádraig Brady  <P@draigBrady.com>
+
+	cp: with --force; replace self referential symlinks
+	* src/copy.c (copy_internal): Don't fail immediately upon
+	getting ELOOP when running stat() on the destination,
+	rather proceeding if -f specified, allowing the link
+	to be removed.  If the loop is not in the final component
+	of the destination path, we still fail but at the
+	subsequent unlink() stage.
+	* doc/coreutils.texi (cp invocation): Adjust wording to say
+	that --force doesn't work with dangling links, rather than
+	all links that can't be traversed.
+	* tests/cp/thru-dangling.sh: Add a test case.
+	* NEWS: Mention the change in behavior.
+	Discussed in https://bugs.gnu.org/31335
+
+2018-05-15  Pádraig Brady  <P@draigBrady.com>
+
+	cp: fix symlink checks when overwriting files
+	Ensure this _does_ recreate the symlink
+	  Given "path1" and "path2" are on different devices.
+	  $ touch "path1/file"
+	  $ cd path2/; ln -s path1/file
+	  $ cp -dsf path1/file .
+
+	Ensure this does _not_ overwrite file
+	  $ touch file
+	  $ ln -s file l1
+	  $ cp -sf l1 file
+
+	* src/copy.c (same_file_ok): Remove device ids from consideration,
+	instead deferring to future EXDEV with --link or allowing
+	the first case above to work.
+	Also ensure that we do not exist this function too early,
+	when the destination file is not a symlink, which protects
+	against the second case.
+	* tests/cp/cross-dev-symlink.sh: Add a test for the first case.
+	* tests/cp/same-file.sh: Add a test for the second case above.
+	* NEWS: Mention the bug fixes.
+	* THANKS.in: Mention the reporters who also analyzed the code.
+	Fixes https://bugs.gnu.org/31364
+
+2018-05-15  Pádraig Brady  <P@draigBrady.com>
+
+	cp: ensure --remove-destination doesn't traverse symlinks
+	* src/cp.c (target_directory_operand): Allow through inaccessible
+	arguments with -f or --remove.
+	* doc/coreutils.texi (cp invocation): Clarify that -f doesn't directly
+	impact the removal of non-traversable symlinks.
+	* tests/cp/dir-rm-dest.sh: Test the new behavior.
+	* tests/cp/thru-dangling.sh: Enforce -f behavior wrt symlinks.
+	* NEWS: Mention the bug fix.
+	Fixes https://bugs.gnu.org/31335
+
+2018-05-14  Pádraig Brady  <P@draigBrady.com>
+
+	maint: make chmod/chgrp/chown leak free under valgrind
+	* src/chmod.c: Deallocate the mode change array in dev mode.
+	* src/chown.c: Make chopt_free() actually deallocate, but
+	only call in dev mode.
+	* src/chgrp.c: Likewise.
+
+	doc: improve formatting of nl --help
+	* src/nl.c (usage): Better delineate the information.
+
+2018-05-14  Paul Eggert  <eggert@cs.ucla.edu>
+
+	who: simplify port to GCC 8
+	* src/who.c (make_id_equals_comment): Use simpler workaround
+	for GCC bug 85602.  Suggested by Martin Sebor in:
+	https://gcc.gnu.org/bugzilla/show_bug.cgi?id=85602#c3
+
+2018-05-03  Pádraig Brady  <P@draigBrady.com>
+
+	build: make GCC 8 adjustments more portable
+	* src/chown-core.h (chopt_free): Just define away this noop.
+	* src/chown-core.c (chopt_free): Remove the empty implementation.
+
+2018-05-03  Paul Eggert  <eggert@cs.ucla.edu>
+
+	build: update gnulib submodule to latest
+
+	maint: port to GCC 8
+	* src/chown-core.h (chopt_free, gid_to_name, uid_to_name):
+	No longer const.
+	* src/make-prime-list.c (xalloc): Add malloc attribute.
+	* src/who.c (make_id_equals_comment): Work around GCC bug 85602
+	by using mempcpy rather than strncat.  Although the old code
+	was correct, strncat raises so many hackles that it’s not
+	worth maintaining its use here.
+
+	maint: remove strpbrk module
+	* bootstrap.conf (gnulib_modules): Remove obsolete module strpbrk.
+
+	build: update gnulib submodule to latest
+
+2018-04-20  Pádraig Brady  <P@draigBrady.com>
+
+	doc: retroactively adjust info about tail and closed output
+	* NEWS: Expand on the 8.28 description of how tail more
+	responsively reacts to closed output, and move from "Improvements"
+	to "Changed behavior".
+	* cfg.mk (old_NEWS_hash): Regenerate.
+	Fixes https://bugs.gnu.org/31225
+
+2018-04-18  Pádraig Brady  <P@draigBrady.com>
+
+	doc: timeout --help: mention 0 DURATION disables timeout
+	* src/timeout.c (usage): Mention that a duration of 0 disables
+	the associated timeout, which is both concise info and useful
+	functionality as timeouts are frequently configured.
+
+2018-04-05  Eric Blake  <eblake@redhat.com>
+
+	doc: retroactively document -e/-u addition in NEWS
+	Prompted by https://bugs.gnu.org/31045
+
+	* NEWS: Update 8.8 blurb to mention other split additions.
+	* cfg.mk (old_NEWS_hash): Regenerate.
+
+2018-04-03  Paul Eggert  <eggert@cs.ucla.edu>
+
+	doc: Clarify octal bits in permissions
+	* doc/perm.texi (Numeric Modes): Briefly explain octal.
+	Reorder description to make it more intuitive (Bug#29069).
+
+2018-03-28  Tobias Stoeckmann  <tobias@stoeckmann.org>
+
+	cut: improve large file support on 32 bit
+	Increase max range from SIZE_MAX to UINTMAX_MAX, which will
+	allow cut to support line lengths up to the max file size
+	on all systems. The inherent SIZE_MAX limitation in cut was
+	removed with the enhancements in https://bugs.gnu.org/13127.
+	Also numfmt gets similarly increased --field ranges due to
+	shared code.
+
+	* src/cut.c: s/size_t/uintmax_t/.
+	* src/numfmt.c: Likewise.
+	* src/set-fields.c: Likewise.
+	* src/set-fields.h: Likewise.
+	* tests/misc/cut-huge-range.sh: Adjust accordingly.
+	* tests/misc/numfmt.pl: Likewise.
+	* NEWS: Mention the improvement.
+
+2018-03-27  Pádraig Brady  <P@draigBrady.com>
+
+	tests: avoid a recent syntax-check failure
+	* tests/ls/a-option.sh: s/framework_failure/&_/.
+
+2018-03-27  Paul Eggert  <eggert@cs.ucla.edu>
+
+	ls: -A now overrides -a
+	Problem reported by Karl Berry (Bug#30963).
+	* NEWS: Mention this.
+	* src/ls.c (decode_switches): Implement this.
+	* tests/ls/a-option.sh: New file.
+	* tests/local.mk (all_tests): Add it.
+
+2018-03-24  Roland Hieber  <rohieb@rohieb.name>
+
+	doc: fix two typos in github templates
+	* .github/ISSUE_TEMPLATE.txt: Fix typo "coreitils" in the URL to the bug
+	tracker.
+	* .github/PULL_REQUEST_TEMPLATE.txt: Likewise.
+
+2018-03-16  Pádraig Brady  <P@draigBrady.com>
+
+	ls: increase the allowed abmon width from 5 to 12
+	This will impact relatively few languages,
+	and will make Arabic or Catalan etc.
+	output unambiguous abbreviated month names.
+
+	* src/ls.c (MAX_MON_WIDTH): Increase from 5 to 12.
+	* NEWS: Mention the bug fix.
+	* tests/ls/abmon-align.sh: Augment to check for ambiguous output.
+	Fixes https://bugs.gnu.org/30814
+
+2018-03-14  Brent Petit  <brent.petit@hpe.com>
+
+	stat,tail: add support for the EXFS file system
+	Enhanced XFS (EXFS) is a version of XFS maintained by HPE.
+	EXFS uses a unique magic number to allow the use of community
+	XFS, and EXFS filesystems at the same time.
+
+	* src/stat.c (human_fstype): Add file system ID definition,
+	and use "exfs" as the name.
+	* NEWS: Mention the Improvement.
+
+2018-03-06  Paul Eggert  <eggert@cs.ucla.edu>
+
+	build: update gnulib submodule to latest
+
+2018-03-05  Paul Eggert  <eggert@cs.ucla.edu>
+
+	stat: work around IBM xlC bug
+	Problem reported by John Wiersba (Bug#30718)
+	* src/stat.c (human_time): Avoid giving an integer constant
+	expression a name, as it runs afoul of a bug in IBM XL C/C++ for
+	AIX 12.01.0000.0002.
+
+2018-03-04  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: adjust email address of Keith Thompson in THANKS.in
+	* THANKS.in (Keith Thompson): Update email address as requested by
+	himself at https://lists.gnu.org/r/coreutils/2018-03/msg00004.html
+
+2018-02-24  Pádraig Brady  <P@draigBrady.com>
+
+	cp: set appropriate default permissions for special files
+	This issue was introduced in commit v8.19-145-g24ebca6
+
+	* src/copy.c (copy_internal): When setting default permissions
+	to use with --no-preserve=mode, only set executable bits for
+	directories or sockets.
+	* NEWS: Mention the fix.
+	* tests/cp/preserve-mode.sh: Add a test case.
+	Fixes https://bugs.gnu.org/30534
+
+2018-01-21  Pádraig Brady  <P@draigBrady.com>
+
+	doc: use consistent example format in manual
+	* doc/coreutils.texi: Use @example consistently
+	as we don't need the smaller or fixed width representation.
+	This is especially true for the synopsis of commands.
+	@smallexample is rendered left aligned for HTML
+	which is awkward to read with the center aligned main content.
+
+2018-01-10  Paul Eggert  <eggert@cs.ucla.edu>
+
+	mv: clarify ‘mv -n A A’ change
+
+	mv: fewer syscalls for ‘mv a b’
+	This builds on a previous patch for mv atomicity (Bug#29961).
+	It merely improves performance; it does not fix bugs.
+	* src/copy.h (struct cp_options): New members last_file, rename_errno.
+	* src/copy.c (copy_internal): Support new rename_errno member
+	for the copy options.  Avoid calling stat when new members
+	suggest it’s not needed.
+	(cp_options_default): Initialize new members.
+	* src/mv.c: Include renameat2.h.
+	(main): With two arguments, first call ‘renamat2 (AT_FDCWD, "a",
+	AT_FDCWD, "b", RENAME_NOREPLACE)’.  Use its results to skip
+	remaining processing if possible; for example, if it succeeds
+	there is no need to stat either "a" or "b".  Also, set
+	x.last_file when it is the last file to rename.
+
+	mv: improve -n atomicity
+	Problem reported by Kamil Dudka (Bug#29961).
+	* NEWS: Mention this.
+	* src/copy.c: Include renameat2.h.
+	(copy_internal): If mv, try renameat2 first thing, with
+	RENAME_NOREPLACE.  If this works, skip most of the remaining code.
+	Also, fail quickly if it fails with EEXIST, and we are using -n.
+
+2018-01-09  Michael Orlitzky  <michael@orlitzky.com>
+
+	doc: warn about following symlinks recursively in chown/chgrp
+	In both chown and chgrp (which shares its code with chown), operating
+	on symlinks recursively has a window of vulnerability where the
+	destination user or group can change the target of the operation.
+	Warn about combining the --dereference, --recursive, and -L flags.
+
+	* doc/coreutils.texi (warnOptDerefWithRec): Add macro.
+	(node chown invocation): Add it to --dereference and -L.
+	(node chgrp invocation): Likewise.
+
+	See also: CVE-2017-18018
+
+2018-01-05  Paul Eggert  <eggert@cs.ucla.edu>
+
+	cp: remove ASSIGN_BASENAME_STRDUPA
+	* src/cp.c (do_copy): Just use ASSIGN_STRDUPA, as this simplifies
+	the code and uses less memory.
+
+2018-01-04  Paul Eggert  <eggert@cs.ucla.edu>
+
+	mv: -n overrides -u
+	* NEWS: Mention these fixes.
+	* doc/coreutils.texi (cp invocation, mv invocation):
+	Mention that -n is silent, and that it overrides -u.
+	* src/cp.c, src/mv.c (main): -n overrides -u.
+
+2018-01-03  Paul Eggert  <eggert@cs.ucla.edu>
+
+	tr: add -A, for compatibility with AIX tr
+	Problem reported by Michael (Bug#29946).
+	* src/tr.c (main): Add undocumented -A option.
+
+2018-01-03  Michael Orlitzky  <michael@orlitzky.com>
+
+	doc: clarify chown/chgrp --dereference defaults
+	* doc/coreutils.texi: the documentation for the --dereference
+	  flag of chown/chgrp states that it is the default mode of
+	  operation. Document that this is only the case when operating
+	  non-recursively.
+
+2018-01-02  Pádraig Brady  <P@draigBrady.com>
+
+	tests: avoid false failure with xargs on AIX
+	* tests/misc/shred-remove.sh: AIX xargs defaults to using
+	'_' to indicate end of input, thus ignoring it.
+	Rather than specifying -E to avoid this behavior, simplify
+	by removing sed and xargs usage.
+
+2018-01-01  Pádraig Brady  <P@draigBrady.com>
+
+	maint: update all copyright year number ranges
+	Run "make update-copyright" and then...
+
+	* gnulib: Update to latest with copyright year adjusted.
+	* tests/init.sh: Sync with gnulib to pick up copyright year.
+	* bootstrap: Likewise.
+	* tests/sample-test: Adjust to use the single most recent year.
+
 2017-12-27  Pádraig Brady  <P@draigBrady.com>
+
+	maint: post-release administrivia
+	* NEWS: Add header line for next release.
+	* .prev-version: Record previous version.
+	* cfg.mk (old_NEWS_hash): Auto-update.
 
 	version 8.29
 	* NEWS: Record release date.
@@ -38,7 +688,7 @@
 	* Makefile.am: Update the oldest documented version
 	to 8.20 which is now about 5 years old.
 
-2017-12-18  Bernhard Voelker  <mail@bernhard-voelker.de>
+2017-12-17  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	doc: mention which privileges are needed to chmod
 	POSIX specification for chmod(1):
@@ -66,12 +716,12 @@
 	    if (file_index > 0)
 	So change the type of file_index to signed (size_t).
 
-2017-12-11  Bernhard Voelker  <mail@bernhard-voelker.de>
+2017-12-10  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	maint: adjust for the renamed nstrfime gnulib module
 	* bootstrap.conf: s/strftime/nstrfrime/.
 
-2017-12-11  Pádraig Brady  <P@draigBrady.com>
+2017-12-10  Pádraig Brady  <P@draigBrady.com>
 
 	build: update gnulib submodule to latest
 	* gnulib: Update with various build/test fixes.
@@ -103,7 +753,7 @@
 	of TIME_STYLE out of the option section as it was awkward
 	to read and write there within 80 columns.
 
-2017-12-10  Pádraig Brady  <P@draigBrady.com>
+2017-12-09  Pádraig Brady  <P@draigBrady.com>
 
 	doc: clarify numeric setuid handling in chmod man page
 	* man/chmod.x: Update the information to state one can
@@ -185,7 +835,7 @@
 	* src/yes.c: Likewise.
 	* NEWS (Improvements): Mention the fix.
 
-2017-11-29  Pádraig Brady  <P@draigBrady.com>
+2017-11-28  Pádraig Brady  <P@draigBrady.com>
 
 	test: fix issues with tests/cp/preserve-mode.sh
 	* tests/cp/preserve-mode.sh: This was the only use of awk,
@@ -195,8 +845,6 @@
 
 	build: update gnulib submodule to latest
 	* gnulib: Update with various build/test fixes.
-
-2017-11-28  Pádraig Brady  <P@draigBrady.com>
 
 	build: update gnulib submodule to latest
 	* gnulib: Update including various build fixes.
@@ -209,7 +857,7 @@
 	* tests/misc/timeout.sh: Run the test both for the long and the short
 	option.
 
-2017-11-25  Pádraig Brady  <P@draigBrady.com>
+2017-11-24  Pádraig Brady  <P@draigBrady.com>
 
 	dd: support iflag=direct with arbitrary sized files
 	* src/dd.c (iread): Handle read error with a non-aligned
@@ -219,7 +867,7 @@
 	* tests/dd/direct.sh: Test the iflag=direct case also.
 	* NEWS: Mention the improvement.
 
-2017-11-24  Pádraig Brady  <P@draigBrady.com>
+2017-11-23  Pádraig Brady  <P@draigBrady.com>
 
 	timeout: add --verbose to diagnose timeouts
 	This is useful as handling in shell is complicated
@@ -234,7 +882,7 @@
 	* NEWS: Mention the new feature
 	Fixes https://bugs.gnu.org/21760
 
-2017-11-19  Pádraig Brady  <P@draigBrady.com>
+2017-11-18  Pádraig Brady  <P@draigBrady.com>
 
 	tail: seek to the end of block devices
 	* src/tail.c (tail_bytes): Try lseek(..., SEEK_END) when
@@ -270,7 +918,7 @@
 	* .github/ISSUE_TEMPLATE.txt,
 	  .github/PULL_REQUEST_TEMPLATE.txt: New files.
 
-2017-11-08  Jim Meyering  <meyering@fb.com>
+2017-11-07  Jim Meyering  <meyering@fb.com>
 
 	maint: make hook script reject "/archive/html" in lists.gnu.org URLS
 	* scripts/git-hooks/commit-msg: Require the abbreviated "/r/"
@@ -290,7 +938,7 @@
 	* tests/rm/readdir-bug.sh: Likewise.
 	* tests/tail-2/inotify-rotate.sh: Likewise.
 
-2017-11-07  Thomas Deutschmann  <whissi@gentoo.org>
+2017-11-06  Thomas Deutschmann  <whissi@gentoo.org>
 
 	tests: avoid false failure with inaccessible mount points
 	* tests/ls/readdir-mountpoint-inode.sh: Skip the test
@@ -298,7 +946,7 @@
 	Fixes https://bugs.gnu.org/29167
 	Reported at: https://bugs.gentoo.org/353164
 
-2017-11-06  Bernhard Voelker  <mail@bernhard-voelker.de>
+2017-11-05  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	doc: fix "Up" field of realpath usage examples
 	Older versions of 'makeinfo' choke on a missing reference:
@@ -311,7 +959,7 @@
 	* doc/coreutils.texi (realpath invocation): Add a menu referencing
 	the usage examples - introduced in v8.27-91-g7449f0d.
 
-2017-11-06  Pádraig Brady  <P@draigBrady.com>
+2017-11-05  Pádraig Brady  <P@draigBrady.com>
 
 	maint: ensure https:// URLs are used in --help and man pages
 	* configure.ac(AC_INIT): Specify the URL explicitly, so we're
@@ -337,14 +985,14 @@
 	* NEWS: Mention the fix.
 	Fixes https://bugs.gnu.org/29038
 
-2017-10-28  Jim Meyering  <meyering@fb.com>
+2017-10-27  Jim Meyering  <meyering@fb.com>
 
 	build: ls.c: apply _GL_ATTRIBUTE_PURE to more functions
 	* src/ls.c (DEFINE_SORT_FUNCTIONS): Apply _GL_ATTRIBUTE_PURE
 	to each strcmp-derived function definition, since GCC8 with
 	-Wsuggest-attribute=pure now warns it is needed.
 
-2017-10-26  Vincent Lefevre  <vincent@vinc17.net>
+2017-10-25  Vincent Lefevre  <vincent@vinc17.net>
 
 	doc: reference statfs(2) in the stat(1) man page
 	* man/stat.x (SEE ALSO): Mention statfs(2) in addition to stat(2).
@@ -352,7 +1000,7 @@
 	so we'll defer that reference to the SEE ALSO section of statfs(2).
 	Fixes https://bugs.gnu.org/28989
 
-2017-10-25  Pádraig Brady  <P@draigBrady.com>
+2017-10-24  Pádraig Brady  <P@draigBrady.com>
 
 	tests: avoid false failure when O_DIRECT isn't supported
 	* tests/dd/nocache_eof.sh: Only run the O_DIRECT tests
@@ -361,7 +1009,7 @@
 	supporting O_DIRECT, there would have been false failures.
 	* tests/dd/direct.sh: Clarify the skip message.
 
-2017-10-25  Pádraig Brady  <P@draigBrady.com>
+2017-10-24  Pádraig Brady  <P@draigBrady.com>
 
 	dd: fix nocache regions passed to posix_fadvise()
 	Previously with oflag=direct the call to invalidate_cache()
@@ -407,7 +1055,7 @@
 	* src/ls.c (usage): Mention QUOTING_STYLE with the --quoting-style
 	option, and indicate it has lower precedence than that option.
 
-2017-10-24  Pádraig Brady  <P@draigBrady.com>
+2017-10-23  Pádraig Brady  <P@draigBrady.com>
 
 	maint: apply suggested cleanup to recent stty.c change
 	This should have been part of commit v8.28-17-gf926f7c
@@ -421,7 +1069,7 @@
 	* tests/misc/b2sum.sh: Add test cases.
 	Fixes https://bugs.gnu.org/28860
 
-2017-10-24  Pádraig Brady  <P@draigBrady.com>
+2017-10-23  Pádraig Brady  <P@draigBrady.com>
 
 	stty: fix processing of options when -F is specified
 	This was a latent issue that became significant with
@@ -434,7 +1082,7 @@
 	* tests/misc/stty-invalid.sh: Add a test case.
 	Fixes https://bugs.gnu.org/28859
 
-2017-10-24  Pádraig Brady  <P@draigBrady.com>
+2017-10-23  Pádraig Brady  <P@draigBrady.com>
 
 	timeout: fix a small race that would ignore command exit
 	This fixes a regression from commit v8.26-39-g2f69dba
@@ -444,7 +1092,7 @@
 	fires between waitpid() polling and sigsuspend() waiting for a signal.
 	* NEWS: Mention the fix.
 
-2017-10-24  Thomas Jarosch  <thomas.jarosch@intra2net.com>
+2017-10-23  Thomas Jarosch  <thomas.jarosch@intra2net.com>
 
 	timeout: fix regression when invoked with blocked SIGCHLD
 	We inherit the signal mask from our parent process,
@@ -458,7 +1106,7 @@
 	* src/timeout.c (install_sigchld): Ensure SIGCHLD is unblocked.
 	* NEWS: Mention the issue.
 
-2017-10-02  Pádraig Brady  <P@draigBrady.com>
+2017-10-01  Pádraig Brady  <P@draigBrady.com>
 
 	build: reinstate distribution of man pages
 	man pages change little between systems,
@@ -477,12 +1125,12 @@
 	* NEWS: Mention the build-related change.
 	Fixes https://bugs.gnu.org/28574
 
-2017-10-02  Pádraig Brady  <P@draigBrady.com>
+2017-10-01  Pádraig Brady  <P@draigBrady.com>
 
 	maint: remove a duplicate entry from THANKS
 	* .mailmap: Prefer Colin Watson's last used email address.
 
-2017-09-25  Paul Eggert  <eggert@cs.ucla.edu>
+2017-09-24  Paul Eggert  <eggert@cs.ucla.edu>
 
 	copy: revert recent patch for vulnerable dirs
 	I plan to propose a better patch to catch vulnerable parent
@@ -512,7 +1160,7 @@
 	* THANKS.in: Add the reporter Jack Howarth.
 	Fixes https://bugs.gnu.org/28506
 
-2017-09-21  Pádraig Brady  <P@draigBrady.com>
+2017-09-20  Pádraig Brady  <P@draigBrady.com>
 
 	tests: avoid a false failure in expr test with UTF8
 	* tests/misc/expr.pl: Skip the quote varying tests in
@@ -520,7 +1168,7 @@
 	in those locales.  Also ERR_SUBST is already defined for
 	some tests so awkward to redefine to munge UTF8 quotes to ASCII.
 
-2017-09-20  Assaf Gordon  <assafgordon@gmail.com>
+2017-09-19  Assaf Gordon  <assafgordon@gmail.com>
 
 	expr: add detailed syntax error messages
 	Show offending argument instead of a generic 'syntax error' message.
@@ -531,7 +1179,7 @@
 	(eval7, main): Replace syntax_error call with detailed die message.
 	* tests/misc/expr.pl: Add tests for new messages.
 
-2017-09-20  Pádraig Brady  <P@draigBrady.com>
+2017-09-19  Pádraig Brady  <P@draigBrady.com>
 
 	maint: fix new syntax-check failures from HTTPS adjustments
 	* cfg.mk [old_NEWS_hash]: update with `make update-NEWS-hash`.
@@ -574,7 +1222,7 @@
 	* tests/mv/vulnerable-target.sh: New test.
 	* tests/local.mk (all_root_tests): Add it.
 
-2017-09-14  Bernhard Voelker  <mail@bernhard-voelker.de>
+2017-09-13  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	ptx: avoid infloop due to zero-length matches with -S regex
 	* src/ptx.c (find_occurs_in_text): Die with an appropriate error
@@ -587,7 +1235,7 @@
 	Symbolic Execution techniques developed in the course of the
 	SYMBIOSYS research project at COMSYS, RWTH Aachen University.
 
-2017-09-02  Pádraig Brady  <P@draigBrady.com>
+2017-09-01  Pádraig Brady  <P@draigBrady.com>
 
 	maint: post-release administrivia
 	* NEWS: Add header line for next release.
@@ -597,19 +1245,19 @@
 	version 8.28
 	* NEWS: Record release date.
 
-2017-09-01  Pádraig Brady  <P@draigBrady.com>
-
 	tests: fix false failure in recent ls --hyperlink test
 	* tests/ls/hyperlink.sh: If the hostname or any part of
 	the absolute path would be changed due to URL encoding,
 	the test would fail.  Therefore simplify to remove
 	these components of the URL from consideration.
 
+2017-08-31  Pádraig Brady  <P@draigBrady.com>
+
 	maint: avoid a syntax-check failure
 	* .gitignore: Remove lines indicated by sc_gitignore_redundant
 	in a freshly checked out repo.
 
-2017-08-31  Pádraig Brady  <P@draigBrady.com>
+2017-08-30  Pádraig Brady  <P@draigBrady.com>
 
 	tests: exclude the expensive gnulib fts-tests
 	* gnulib: The only change in this gnulib update
@@ -631,7 +1279,7 @@
 	which is supported.
 	Reported by Assaf Gordon on Alpine Linux.
 
-2017-08-31  Pádraig Brady  <P@draigBrady.com>
+2017-08-30  Pádraig Brady  <P@draigBrady.com>
 
 	tests: skip tests upon failure to set SELinux context
 	On some setups the root:object_r:tmp_t context is invalid.
@@ -691,7 +1339,7 @@
 	the advice is to use `runcon ... setsid ...`
 	to avoid this particular issue.
 
-2017-08-30  Pádraig Brady  <P@draigBrady.com>
+2017-08-29  Pádraig Brady  <P@draigBrady.com>
 
 	stat: fix determination of max name length on BSD systems
 	We only use one of statfs or statvfs for `stat -f`
@@ -825,7 +1473,7 @@
 	* tests/rm/v-slash.sh: Likewise.
 	* tests/touch/relative.sh: Likewise.
 
-2017-08-29  Josef Cejka  <jcejka@suse.com>
+2017-08-28  Josef Cejka  <jcejka@suse.com>
 	    Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	df: avoid stat() for dummy file systems with -l
@@ -847,12 +1495,12 @@
 
 	Fixes http://bugzilla.suse.com/show_bug.cgi?id=1043059
 
-2017-08-29  Assaf Gordon  <assafgordon@gmail.com>
+2017-08-28  Assaf Gordon  <assafgordon@gmail.com>
 
 	doc: add 'realpath usage examples' section
 	* doc/coreutils.texi (Realpath usage examples): New section.
 
-2017-08-29  Assaf Gordon  <assafgordon@gmail.com>
+2017-08-28  Assaf Gordon  <assafgordon@gmail.com>
 
 	doc: fix realpath index entry
 	The 'readlink' node has '@findex realpath' in it. This results in
@@ -862,7 +1510,7 @@
 
 	* doc/coreutils.texi (readlink): Change '@findex realpath' to @cindex.
 
-2017-08-29  Assaf Gordon  <assafgordon@gmail.com>
+2017-08-28  Assaf Gordon  <assafgordon@gmail.com>
 
 	realpath: improve usage description for --relative-{to,base}
 	* src/realpath.c (usage): Explicitly say 'DIR' instead of 'FILE' for
@@ -870,7 +1518,7 @@
 	that regular files can be used as relative base.
 	* doc/coreutils.texi (realpath): Same.
 
-2017-08-25  Pádraig Brady  <P@draigBrady.com>
+2017-08-24  Pádraig Brady  <P@draigBrady.com>
 
 	ls: consistently quote symlink targets
 	* src/ls.c (gobble_file): Disable the optimization to avoid quoting
@@ -880,7 +1528,7 @@
 	* tests/local.mk: Reference the test.
 	* NEWS: Mention the fix.
 
-2017-08-25  Pádraig Brady  <P@draigBrady.com>
+2017-08-24  Pádraig Brady  <P@draigBrady.com>
 
 	tail: reinstate inotify use with FIFOs
 	commit v8.27-44-g18f6b22 was too aggressive in
@@ -972,7 +1620,7 @@
 
 	build: update gnulib submodule to latest
 
-2017-08-14  Pádraig Brady  <P@draigBrady.com>
+2017-08-13  Pádraig Brady  <P@draigBrady.com>
 
 	kill: fix signal number to name lookup on AIX
 	* src/operand2sig.c (operand2sig): AIX uses a different bit pattern
@@ -1032,6 +1680,8 @@
 	* gl/modules/tempname.diff: This patch failed to apply.
 	Adjust it to reflect removal of the secure_getenv dependency.
 
+2017-08-11  Jim Meyering  <meyering@fb.com>
+
 	chroot: fix typo in preceding change: didn't compile
 	* src/chroot.c (usage): Add backslashes.
 
@@ -1041,24 +1691,22 @@
 	* src/chroot.c (usage): Use correct quoting in descriptive diagnostic.
 	We would run `"$SHELL" -i`, not `${SHELL} -i`.
 
-2017-08-09  Assaf Gordon  <assafgordon@gmail.com>
+2017-08-08  Assaf Gordon  <assafgordon@gmail.com>
 
 	doc: fix join example
 	* doc/coreutils.texi (join invocation): Fix incorrect output in example.
 	Reported by Phlosioneer in https://bugs.gnu.org/28014 .
 
-2017-08-04  Paul Eggert  <eggert@cs.ucla.edu>
+2017-08-03  Paul Eggert  <eggert@cs.ucla.edu>
 
 	build: update gnulib submodule to latest
-
-2017-08-03  Paul Eggert  <eggert@cs.ucla.edu>
 
 	copy: more-accurate warning about destruction
 	* src/copy.c (copy_internal):
 	* tests/cp/backup-is-src.sh, tests/mv/backup-is-src.sh:
 	Say "might destroy", not "would destroy".
 
-2017-08-03  Pádraig Brady  <P@draigBrady.com>
+2017-08-02  Pádraig Brady  <P@draigBrady.com>
 
 	maint: avoid a syntax-check failure
 	* src/shred.c (wipename): As per the comment, the arguments
@@ -1083,7 +1731,7 @@
 	Although this reintroduces a race, it's more compatible with
 	previous behavior.
 
-2017-07-31  Paul Eggert  <eggert@cs.ucla.edu>
+2017-07-30  Paul Eggert  <eggert@cs.ucla.edu>
 
 	copy: sanity-check --suffix
 	* src/cp.c, src/install.c, src/ln.c, src/mv.c (main):
@@ -1108,7 +1756,7 @@
 
 	build: update gnulib submodule to latest
 
-2017-07-25  Jim Meyering  <meyering@fb.com>
+2017-07-24  Jim Meyering  <meyering@fb.com>
 
 	maint: fix grammar in a shred.c comment
 	* src/shred.c: Remove spurious "to" in an old comment.
@@ -1180,7 +1828,7 @@
 	* NEWS (Bug fixes): Tweak wording of the mv/cp-vs-symlink-ownership
 	entry and the one about df.
 
-2017-06-28  Assaf Gordon  <assafgordon@gmail.com>
+2017-06-27  Assaf Gordon  <assafgordon@gmail.com>
 
 	expr: add multibyte support
 	Discussed in https://bugs.gnu.org/26779 .
@@ -1201,7 +1849,7 @@
 	* tests/misc/expr-multibyte.pl: New tests with multibyte input.
 	* tests/local.mk: Add new test file.
 
-2017-06-21  Jim Meyering  <meyering@fb.com>
+2017-06-20  Jim Meyering  <meyering@fb.com>
 
 	maint: avoid spurious "make distcheck" failure
 	When the generated file, doc/constants.texi, happens to be older than
@@ -1258,7 +1906,7 @@
 	* tests/tail-2/pipe-f.sh: Add test cases.
 	* NEWS: Mention the improvement.
 
-2017-06-11  Jim Meyering  <meyering@fb.com>
+2017-06-10  Jim Meyering  <meyering@fb.com>
 
 	maint: update to work with GCC7's -Werror=implicit-fallthrough=5
 	* src/system.h (FALLTHROUGH): Define.
@@ -1289,7 +1937,7 @@
 	* tests/tail-2/inotify-dir-recreate.sh: Skip when
 	inotify is not usable.  Also remove a bash specific &> construct.
 
-2017-06-03  Pádraig Brady  <P@draigBrady.com>
+2017-06-02  Pádraig Brady  <P@draigBrady.com>
 
 	copy: don't fail when unable to chown symlinks
 	* src/copy.c (copy_internal): Honor the x->require_preserve flag
@@ -1303,7 +1951,7 @@
 	* doc/coreutils.texi (runcon invocation): Mention setpriv usage.
 	Discussed at https://bugzilla.redhat.com/1360903
 
-2017-05-18  Pádraig Brady  <P@draigBrady.com>
+2017-05-17  Pádraig Brady  <P@draigBrady.com>
 
 	mv: distinguish copy and rename operations with --verbose
 	* src/copy.c (copy_internal): In x->move_mode distinguish
@@ -1325,19 +1973,19 @@
 	* NEWS: Mention the fix.
 	Fixes http://bugs.gnu.org/26783
 
-2017-05-04  Pádraig Brady  <P@draigBrady.com>
+2017-05-03  Pádraig Brady  <P@draigBrady.com>
 
 	maint: fix various typos in recent commits
 	* NEWS: Grammar fixes.
 	* HACKING: Likewise.
 
-2017-05-04  Jaak Ristioja  <jaak.ristioja@cyber.ee>
+2017-05-03  Jaak Ristioja  <jaak.ristioja@cyber.ee>
 
 	doc: Fixed typo in timeout man page
 	* man/timeout.x: Correct spelling of "currently".
 	Fixes http://bugs.gnu.org/26762
 
-2017-04-30  Pádraig Brady  <P@draigBrady.com>
+2017-04-29  Pádraig Brady  <P@draigBrady.com>
 
 	doc: update the instructions for generating a coverage report
 	* HACKING: Change from explicit instructions to using gnulib
@@ -1352,7 +2000,7 @@
 	without translating them, to simplify the translators’ jobs.
 	See Bug#26621.
 
-2017-04-27  Pádraig Brady  <P@draigBrady.com>
+2017-04-26  Pádraig Brady  <P@draigBrady.com>
 
 	date,touch: test and document large TZ security issue
 	Add a test for CVE-2017-7476 which was fixed in gnulib at:
@@ -1363,7 +2011,7 @@
 	* tests/local.mk: Reference the new test.
 	* NEWS: Mention the bug fix.
 
-2017-04-27  Pádraig Brady  <P@draigBrady.com>
+2017-04-26  Pádraig Brady  <P@draigBrady.com>
 
 	build: update gnulib submodule to latest
 	* .gitignore: Add new entry as indicated by `make syntax-check`.
@@ -1396,7 +2044,7 @@
 	build: update gnulib submodule to latest
 	* gl/modules/tempname.diff: Update to match current Gnulib.
 
-2017-04-18  Bogdan Drozdowski  <bogdandr@op.pl>
+2017-04-17  Bogdan Drozdowski  <bogdandr@op.pl>
 
 	shred: fix invalid pattern generation for certain sizes
 	* src/shred.c (fillpattern): Fix the "off by one" issue when
@@ -1413,13 +2061,13 @@
 	the problematic pattern writes.
 	Fixes http://bugs.gnu.org/26545
 
-2017-04-17  Bo Rydberg  <bolry@hotmail.com>
+2017-04-16  Bo Rydberg  <bolry@hotmail.com>
 
 	doc: fix awk example for getting penultimate field
 	* doc/coreutils.texi (cut invocation): Add required brackets.
 	Fixes http://bugs.gnu.org/26519
 
-2017-04-06  Sebastian Kisela  <skisela@redhat.com>
+2017-04-05  Sebastian Kisela  <skisela@redhat.com>
 
 	tail: revert to polling if a followed directory is replaced
 	* src/tail.c (tail_forever_inotify): Add the IN_DELETE_SELF flag when
@@ -1434,7 +2082,7 @@
 	Fixes http://bugs.gnu.org/26363
 	Reported at https://bugzilla.redhat.com/1283760
 
-2017-04-06  Pádraig Brady  <P@draigBrady.com>
+2017-04-05  Pádraig Brady  <P@draigBrady.com>
 
 	maint: fix syntax-check issues in previous tty commit
 	* src/tty.c: Avoid EXIT_FAILURE to be more descriptive
@@ -1458,7 +2106,7 @@
 	* tests/misc/tty.sh: New file.
 	* tests/local.mk (all_tests): Add it.
 
-2017-04-03  Pádraig Brady  <P@draigBrady.com>
+2017-04-02  Pádraig Brady  <P@draigBrady.com>
 
 	doc: refactor and update expand and unexpand --help
 	* src/expand-common.c (emit_tab_list_info): A new function to
@@ -1469,7 +2117,7 @@
 	match alignment with that used in unexpand --help.
 	* src/unexpand.c (usage): Likewise.
 
-2017-04-03  Jacob Keller  <jacob.e.keller@intel.com>
+2017-04-02  Jacob Keller  <jacob.e.keller@intel.com>
 
 	expand,unexpand: add support for incremental tab stops
 	Support --tabs="1,+8" which is equivalent to --tabs="1,9,17,..."
@@ -1491,13 +2139,13 @@
 	sort: update comment
 	* src/sort.c: Update identifiers in comment.
 
-2017-03-30  Chris Davies  <chris@roaima.co.uk>
+2017-03-29  Chris Davies  <chris@roaima.co.uk>
 
 	doc: clarify in dd man page that bs= overrides [io]bs=
 	* src/dd.c (usage): Add the extra info.
 	Reported in https://bugs.debian.org/859021
 
-2017-03-28  Ludovic Courtès  <ludo@gnu.org>
+2017-03-27  Ludovic Courtès  <ludo@gnu.org>
 
 	tests: avoid false ulimit failure on some systems
 	* tests/misc/cut-huge-range.sh: On some systems returns_ may
@@ -1506,14 +2154,14 @@
 	and x86_64 with bash-4.2.37.
 	Fixes http://bugs.gnu.org/26253
 
-2017-03-28  Pádraig Brady  <P@draigBrady.com>
+2017-03-27  Pádraig Brady  <P@draigBrady.com>
 
 	maint: avoid syntax check failure with wrapped returns_
 	* cfg.mk (sc_prohibit_env_returns): Allow wrapped calls to
 	return_ of the form: `wrapper_ returns_ ...` which is needed
 	with the following commit.
 
-2017-03-28  Michael Heimpold  <mhei@heimpold.de>
+2017-03-27  Michael Heimpold  <mhei@heimpold.de>
 
 	split: add new --hex-suffixes option
 	* doc/coreutils.texi (split invocation): Document the new option.
@@ -1523,7 +2171,7 @@
 	* tests/split/numeric.sh: Refactor to support --hex mode.
 	* NEWS: Mention the new feature.
 
-2017-03-28  Pádraig Brady  <P@draigBrady.com>
+2017-03-27  Pádraig Brady  <P@draigBrady.com>
 
 	md5sum,b2sum,sha*sum: don't erroneously trigger BSD reversed mode
 	* src/md5sum.c (split_3): Verify hex digits internally before
@@ -1533,7 +2181,7 @@
 	* NEWS: Mention the bug fix.
 	Fixes http://bugs.gnu.org/26263
 
-2017-03-27  Philipp Thomas  <pth@suse.de>
+2017-03-26  Philipp Thomas  <pth@suse.de>
 
 	df: avoid querying excluded file systems
 	* src/df.c (filter_mount_list): Avoid stat() on
@@ -1597,12 +2245,14 @@
 	variants with sed.
 	Reported and tested by J Rogowsky.
 
+2017-03-10  Pádraig Brady  <P@draigBrady.com>
+
 	build: fix missing renameat() on OS X 10.5.8
 	* bootstrap.conf: Depend on renameat.
 	Reported and tested by J Rogowsky.
 	Fixes http://bugs.gnu.org/26044
 
-2017-03-10  Paul Eggert  <eggert@cs.ucla.edu>
+2017-03-09  Paul Eggert  <eggert@cs.ucla.edu>
 
 	tests: port to tzdb-2017a
 	Problem reported by Bernhard Voelker in:
@@ -1610,7 +2260,7 @@
 	* tests/misc/date-debug.sh: Port test to tzdb 2017a,
 	and future-proof the America/Belize test.
 
-2017-03-09  Pádraig Brady  <P@draigBrady.com>
+2017-03-08  Pádraig Brady  <P@draigBrady.com>
 
 	build: for factor use C in more cases for arm64 and ppc64
 	* src/longlong.h: Sync from gmp repo incorporating:
@@ -1638,7 +2288,7 @@
 	doc: spelling fix for recent doc addition
 	* doc/coreutils.texi (join invocation): s/preceeding/preceding/.
 
-2017-03-08  Bernhard Voelker  <mail@bernhard-voelker.de>
+2017-03-07  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	build: avoid redundant build of tr with --enable-single-binary
 	* src/local.mk [check-duplicate-no-install]: Depend on the
@@ -1646,7 +2296,7 @@
 	where these are not available only result in the sanity
 	check being effectively ignored.
 
-2017-03-08  Assaf Gordon  <assafgordon@gmail.com>
+2017-03-07  Assaf Gordon  <assafgordon@gmail.com>
 
 	build: fix 'install-html' target
 	Switching to non-recursive makefiles broke the 'install-html' target:
@@ -1703,7 +2353,7 @@
 	never needed since we never malloc(0).
 	Reported by Assaf Gordon.
 
-2017-03-02  Assaf Gordon  <assafgordon@gmail.com>
+2017-03-01  Assaf Gordon  <assafgordon@gmail.com>
 
 	doc: expand 'join' info section
 	* doc/coreutils.texi (join invocation): Expand section to
@@ -1722,6 +2372,8 @@
 	* src/expand-common (parse-tab-stops): Exit earlier upon overflow
 	so another warning isn't issued (on 32 bit) in add_tab_stop().
 	Flagged in https://hydra.nixos.org/build/49499970
+
+2017-02-28  Pádraig Brady  <P@draigBrady.com>
 
 	doc: indicate sha1 has the same limitations as md5
 	* doc/coreutils.texi (sha1sum invocation): Given that a SHA-1
@@ -1775,14 +2427,14 @@
 
 	build: update gnulib submodule to latest
 
-2017-02-23  Pádraig Brady  <P@draigBrady.com>
+2017-02-22  Pádraig Brady  <P@draigBrady.com>
 
 	doc: add NEWS for an improvement to dd in the last release
 	* NEWS: Mention the avoidance of the gotcha with specifying
 	a hex constant like count=0x1000 etc. as that previously
 	was silently interpreted as 0.
 
-2017-02-23  Pádraig Brady  <P@draigBrady.com>
+2017-02-22  Pádraig Brady  <P@draigBrady.com>
 
 	cp: set SELinux context for --parents directories
 	* src/copy.c (set_process_security_ctx, set_file_security_ctx):
@@ -1794,7 +2446,7 @@
 
 	Fixes http://bugs.gnu.org/25378
 
-2017-02-18  Pádraig Brady  <P@draigBrady.com>
+2017-02-17  Pádraig Brady  <P@draigBrady.com>
 
 	maint: tweaks so syntax tests pass for previous commit
 	* .gitignore: placate sc_gitignore_redundant.
@@ -1848,14 +2500,14 @@
 
 	build: update gnulib submodule to latest
 
-2017-02-13  Pádraig Brady  <P@draigBrady.com>
+2017-02-12  Pádraig Brady  <P@draigBrady.com>
 
 	maint: tweaks so syntax tests pass for previous commit
 	* src/force-link.h: Don't include headers already included by system.h
 	* src/force-link.c: Likewise.  Also include system.h and
 	explicitly mark extern functions as such.
 
-2017-02-12  Paul Eggert  <eggert@cs.ucla.edu>
+2017-02-11  Paul Eggert  <eggert@cs.ucla.edu>
 
 	ln: replace destination links more atomically
 	If the file B already exists, commands like 'ln -f A B' and
@@ -1879,7 +2531,7 @@
 	* src/local.mk (copy_sources, src_ln_SOURCES): Add them.
 	* tests/cp/same-file.sh: Adjust test case to match fixed behavior.
 
-2017-02-10  Tobias Stoeckmann  <tobias@stoeckmann.org>
+2017-02-09  Tobias Stoeckmann  <tobias@stoeckmann.org>
 
 	timeout: fix race possibly terminating wrong process
 	The race is unlikely, as timeout(1) needs to receive a signal
@@ -1903,7 +2555,7 @@
 
 	Fixes http://bugs.gnu.org/25624
 
-2017-02-10  Pádraig Brady  <P@draigBrady.com>
+2017-02-09  Pádraig Brady  <P@draigBrady.com>
 
 	doc: note the relationship between realpath and readlink
 	* doc/coreutils.texi (realpath invocation): Mention that realpath
@@ -1957,7 +2609,7 @@
 	* po/ChangeLog-2007: Likewise.
 	* old/*: Likewise.
 
-2017-02-07  Maxime de Roucy  <maxime.deroucy@gmail.com>
+2017-02-06  Maxime de Roucy  <maxime.deroucy@gmail.com>
 
 	maint: fix HACKING instructions to run a single test
 	* HACKING: s/make TEST=/make check TEST=/
@@ -1997,7 +2649,7 @@
 	* old/fileutils/NEWS: Likewise.
 	* src/tail.c: Avoided a long line.
 
-2017-01-21  Paul Eggert  <eggert@cs.ucla.edu>
+2017-01-20  Paul Eggert  <eggert@cs.ucla.edu>
 
 	date: fix TZ= regression
 	Problem reported by Paul Wise for Debian, in:
@@ -2019,7 +2671,7 @@
 	* README-hacking: I've just released vc-dwim-1.8, so we can improve
 	the documentation to reference its --initialize option here.
 
-2017-01-15  Paul Eggert  <eggert@cs.ucla.edu>
+2017-01-14  Paul Eggert  <eggert@cs.ucla.edu>
 
 	date: output "-00" for indeterminate time zone
 	* NEWS: Document this behavior, which comes with recent Gnulib.
@@ -2071,7 +2723,7 @@
 
 	maint: standardize on "timestamp" as per POSIX
 
-2017-01-09  Pádraig Brady  <P@draigBrady.com>
+2017-01-08  Pádraig Brady  <P@draigBrady.com>
 
 	stty: ensure no side effects from invalid options
 	* src/stty.c (apply_settings): A new function refactored
@@ -2081,7 +2733,7 @@
 	* NEWS: Mention the improvement.
 	* tests/misc/stty.sh: Add a test case.
 
-2017-01-06  Assaf Gordon  <assafgordon@gmail.com>
+2017-01-05  Assaf Gordon  <assafgordon@gmail.com>
 
 	tests: improve 'date --debug' tests
 	Update tests following improvements to gnulib's parse-datetime.y module.
@@ -2089,7 +2741,7 @@
 
 	* tests/misc/date-debug.sh: Add tests for each of the gnulib changes.
 
-2017-01-06  Assaf Gordon  <assafgordon@gmail.com>
+2017-01-05  Assaf Gordon  <assafgordon@gmail.com>
 
 	build: update gnulib submodule to latest
 
@@ -2285,14 +2937,14 @@
 	checks stderr has no UBSAN warnings.
 	Fixes http://bugs.gnu.org/25041
 
-2016-11-27  Pádraig Brady  <P@draigBrady.com>
+2016-11-26  Pádraig Brady  <P@draigBrady.com>
 
 	doc: add NEWS entries for recent changes
 	* NEWS: Mention in improvements about the workaround for
 	the glibc issue with closed stdin, and the new supported file systems.
 	* tests/misc/b2sum.sh: Spelling fix.
 
-2016-11-27  Pádraig Brady  <P@draigBrady.com>
+2016-11-26  Pádraig Brady  <P@draigBrady.com>
 
 	stat,tail: sync with latest Linux file systems
 	Update with the results from:
@@ -2305,7 +2957,7 @@
 	* src/stat.c (human_fstype): Add entries for:
 	BALLOON_KVM, CGROUP2, DAXFS, ZSMALLOC.
 
-2016-11-27  Pádraig Brady  <P@draigBrady.com>
+2016-11-26  Pádraig Brady  <P@draigBrady.com>
 
 	build: fix potential factor build failure on arm and risc
 	* src/longlong.h: Sync from gmp repo incorporating:
@@ -2313,7 +2965,7 @@
 	Replace obsolete ARC asm 'J' constraints with 'Cal'
 	Provide umul_ppmm for riscv64
 
-2016-11-27  Pádraig Brady  <P@draigBrady.com>
+2016-11-26  Pádraig Brady  <P@draigBrady.com>
 
 	shred,sort: ensure faster unaligned access to rand module
 	glibc has changed the public define
@@ -2331,6 +2983,8 @@
 	* tests/misc/shuf.sh: Test for shuffling with stdin closed.
 
 	build: update gnulib submodule to latest
+
+2016-11-25  Paul Eggert  <eggert@cs.ucla.edu>
 
 	numfmt: pacify Sun C 5.14
 	* src/numfmt.c (main): Don't implicitly coerce pointer in bool
@@ -2381,7 +3035,7 @@
 	by default.
 	* doc/coreutils.texi (readlink invocation): Likewise.
 
-2016-11-24  Pádraig Brady  <P@draigBrady.com>
+2016-11-23  Pádraig Brady  <P@draigBrady.com>
 
 	tests: fix false failure with ASAN in rm-readdir-fail
 	* tests/rm/rm-readdir-fail.sh: ASAN correctly indicated
@@ -2390,7 +3044,7 @@
 	Since fts was deallocating those dirents, we now get
 	a new dirent for each call to our readdir wrapper.
 
-2016-11-24  Pádraig Brady  <P@draigBrady.com>
+2016-11-23  Pádraig Brady  <P@draigBrady.com>
 
 	split: fix memory corruption during chunk extraction
 	ASAN reported this error for: split -n2/3 /dev/null
@@ -2413,7 +3067,7 @@
 
 	Fixes http://bugs.gnu.org/25003
 
-2016-11-24  Pádraig Brady  <P@draigBrady.com>
+2016-11-23  Pádraig Brady  <P@draigBrady.com>
 
 	tail: fix checking of remoteness when not using inotify
 	In recent commit v8.25-93-g7fc7206 we used the f->remote flag
@@ -2604,13 +3258,11 @@
 	* tests/cp/link-deref.sh: Adjust test case.
 	Fixes http://bugs.gnu.org/24958
 
-2016-11-16  Pádraig Brady  <P@draigBrady.com>
+2016-11-15  Pádraig Brady  <P@draigBrady.com>
 
 	tests: fix non portable date in recent test
 	* tests/misc/date.pl: Years < 1900 fail on solaris at least.
 	Reported by Assaf Gordon
-
-2016-11-15  Pádraig Brady  <P@draigBrady.com>
 
 	tests: fix false failure on OS X
 	* tests/misc/sort-h-thousands-sep.sh: The sv_SE locale
@@ -2624,7 +3276,7 @@
 	* src/dircolors.hin: Add .mjpg and .mjpeg multimedia files.
 	This resolves http://bugs.gnu.org/24436.
 
-2016-11-14  Jim Meyering  <meyering@fb.com>
+2016-11-13  Jim Meyering  <meyering@fb.com>
 
 	tests: use "returns_" rather than explicit comparison with "$?"
 	The previous "returns_"-using change failed to convert many
@@ -2639,7 +3291,7 @@
 	* tests/tail-2/wait.sh: Likewise.
 	Thanks to Bernhard Volker for spotting this.
 
-2016-11-14  Pádraig Brady  <P@draigBrady.com>
+2016-11-13  Pádraig Brady  <P@draigBrady.com>
 
 	all: reduce usage of proper_name_utf8()
 	This reduces a standard coreutils install size by about 160K.
@@ -2784,6 +3436,8 @@
 	sophisticated field processing supported by awk(1).
 	Fixes http://bugs.gnu.org/24881
 
+2016-11-04  Pádraig Brady  <P@draigBrady.com>
+
 	stat: make --format=%N honor the QUOTING_STYLE env var
 	* doc/coreutils.texi (stat invocation): Describe the
 	QUOTING_STYLE values now supported.
@@ -2798,8 +3452,6 @@
 	* src/ls.c (usage): The existing description was inaccurate
 	as -N does not directly impact whether control characters
 	are displayed or not.
-
-2016-11-04  Pádraig Brady  <P@draigBrady.com>
 
 	dd: warn about counts specified with confusing 0x prefix
 	* src/dd.c (parse_integer): Suggest to use "00x" instead of "0x",
@@ -2816,7 +3468,7 @@
 	* tests/misc/md5sum.pl: Add a test case.
 	Fixes http://bugs.gnu.org/24795
 
-2016-10-22  Bishop Bettini  <bishop.bettini@gmail.com>
+2016-10-21  Bishop Bettini  <bishop.bettini@gmail.com>
 
 	doc: fix typo in stdbuf man page
 	* man/stdbuf.x: Correct spelling of immediately.
@@ -2840,12 +3492,10 @@
 	* cfg.mk (sc_die_EXIT_FAILURE): A new syntax check rule to
 	catch any new uses of error (CONSTANT, ...);
 
-2016-10-16  Jim Meyering  <meyering@fb.com>
+2016-10-15  Jim Meyering  <meyering@fb.com>
 
 	build: also distribute new file, src/die.h
 	* src/local.mk (noinst_HEADERS): Add die.h.
-
-2016-10-15  Jim Meyering  <meyering@fb.com>
 
 	build: add die.h; avoid new warnings from GCC 7
 	* src/die.h (die): New file/function from grep.
@@ -2960,7 +3610,7 @@
 	Add the parameter type to the declarations to avoid warnings when these
 	backup declarations are used.
 
-2016-09-10  Jim Meyering  <meyering@fb.com>
+2016-09-09  Jim Meyering  <meyering@fb.com>
 
 	gnulib: update to latest, for getprogname fixes
 	Compiling in gnulib-tests/ would fail on some platforms
@@ -2978,7 +3628,7 @@
 	(clone_file): Use FICLONE instead of the older BTRFS_IOC_CLONE,
 	as this ioctl is no longer btrfs-specific.
 
-2016-09-08  Assaf Gordon  <assafgordon@gmail.com>
+2016-09-07  Assaf Gordon  <assafgordon@gmail.com>
 
 	date: add '--debug' option
 	Usage example:
@@ -2997,7 +3647,7 @@
 	* NEWS: Mention new option.
 	* doc/coreutils.texi: Likewise.
 
-2016-09-08  Paul Eggert  <eggert@cs.ucla.edu>
+2016-09-07  Paul Eggert  <eggert@cs.ucla.edu>
 
 	sort: port to strict C + valgrind
 	* bootstrap.conf (gnulib_modules): Add flexmember.
@@ -3168,7 +3818,7 @@
 	* doc/coreutils.texi (date invocation): Likewise.
 	Fixes http://bugs.gnu.org/24077
 
-2016-07-27  Bernhard Voelker  <mail@bernhard-voelker.de>
+2016-07-26  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	maint: fix dependency of man/arch.1
 	The following is a reproducer for the wrong dependency:
@@ -3281,7 +3931,7 @@
 	and reindent to standard indentation.
 	* tests/init.sh: Update from gnulib.
 
-2016-06-25  Paul Eggert  <eggert@cs.ucla.edu>
+2016-06-24  Paul Eggert  <eggert@cs.ucla.edu>
 
 	maint: simplify partial writes etc. in 'yes'
 	* src/yes.c: Include full-write.h.
@@ -3290,7 +3940,7 @@
 	full_write with a buffer as large as needed.  Reuse operand
 	strings if possible, and if the buffer would otherwise be large.
 
-2016-06-24  Pádraig Brady  <P@draigBrady.com>
+2016-06-23  Pádraig Brady  <P@draigBrady.com>
 
 	yes: handle short writes
 	* src/yes.c (main): Loop over the write buffer to
@@ -3321,7 +3971,7 @@
 	a field, and that by default those fields include the blank separators
 	at the start of each field in the comparisons.
 
-2016-06-01  Assaf Gordon  <assafgordon@gmail.com>
+2016-05-31  Assaf Gordon  <assafgordon@gmail.com>
 
 	sort: modify 'leading spaces' debug warning scenarios
 	Print warning regardless of locale, avoid warning if key is zero width.
@@ -3331,7 +3981,7 @@
 	warning.
 	* tests/misc/sort-debug-warn.sh: adjust tests accordingly.
 
-2016-06-01  Assaf Gordon  <assafgordon@gmail.com>
+2016-05-31  Assaf Gordon  <assafgordon@gmail.com>
 
 	tests: sort-debug-warn: add progress information lines
 	Easier troubleshooting of individual 'sort --debug' messages.
@@ -3546,7 +4196,7 @@
 	* bootstrap: Sync with gnulib.
 	* gl/lib/regcomp.c.diff: Regenerate against latest gnulib.
 
-2016-03-07  Jim Meyering  <meyering@fb.com>
+2016-03-06  Jim Meyering  <meyering@fb.com>
 
 	tests: avoid false-failure of split/filter.sh on XFS
 	* tests/split/filter.sh: Use OFF_T_MAX-1 rather than OFF_T_MAX
@@ -3582,6 +4232,8 @@
 	(main): Allow traditional usage if _POSIX2_VERSION is 200809.
 	* tests/misc/tail.pl: Test for new behavior.
 
+2016-02-22  Paul Eggert  <eggert@cs.ucla.edu>
+
 	doc: document sort -o F F danger
 	Problem reported by Yanyan Jiang 蒋炎岩 in: http://bugs.gnu.org/22769
 	* doc/coreutils.texi (sort invocation):
@@ -3593,7 +4245,7 @@
 	* src/date.c (main): Free TZ variable to pacify valgrind, guarded
 	by IF_LINT.
 
-2016-02-16  Pádraig Brady  <P@draigBrady.com>
+2016-02-15  Pádraig Brady  <P@draigBrady.com>
 
 	split: adjust recent --number changes
 	* src/split.c (lines_rr): Reinstate the conditional
@@ -3649,7 +4301,7 @@
 	* tests/split/l-chunk.sh: Adjust tests to match new behavior
 	on oddball inputs.
 
-2016-01-30  Vincent Lefevre  <vincent@vinc17.net>
+2016-01-29  Vincent Lefevre  <vincent@vinc17.net>
 
 	doc: fix the --iso-8601 example in date --help
 	* src/date.c (usage): The colon is used in the timezone offset
@@ -3657,7 +4309,7 @@
 	* THANKS.in: Remove committer.
 	Fixes http://bugs.gnu.org/22491
 
-2016-01-25  Pádraig Brady  <P@draigBrady.com>
+2016-01-24  Pádraig Brady  <P@draigBrady.com>
 
 	build: avoid dynamic linking issue on Solaris sparc
 	Solaris Studio 12 on sparc (not x86) will not remove
@@ -3831,7 +4483,7 @@
 	* init.cfg (get_min_ulimit_v_): Refactor ulimit call to...
 	(ulimit_supported_): ...here, and add calls to avoid coredumps.
 
-2016-01-14  Pádraig Brady  <P@draigBrady.com>
+2016-01-13  Pádraig Brady  <P@draigBrady.com>
 
 	sort: with --debug, flag setlocale() failures on OpenBSD
 	Locale categories are not equivalent on OpenBSD,
@@ -3977,7 +4629,7 @@
 	* tests/misc/sort.pl: Add -z test cases, including case with '\n'.
 	* tests/misc/uniq.pl: Add -z -f test case with \n.
 
-2016-01-10  Bernhard Voelker  <mail@bernhard-voelker.de>
+2016-01-09  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	tests: fix races wrt output files of background processes
 	At least the false positive in tail-2/follow-stdin.sh could be seen
@@ -4115,7 +4767,7 @@
 	summaries, but only if they have prefixes.
 	* tests/dd/reblock.sh, tests/dd/stats.sh: Test new behavior.
 
-2015-12-23  Pádraig Brady  <P@draigBrady.com>
+2015-12-22  Pádraig Brady  <P@draigBrady.com>
 
 	build: update to latest gnulib
 	Mainly for these changes:
@@ -4152,7 +4804,7 @@
 
 	* Makefile.am (dist-hook): Change chmod call from 'ug+rw' to '+rw'.
 
-2015-12-17  Pádraig Brady  <P@draigBrady.com>
+2015-12-16  Pádraig Brady  <P@draigBrady.com>
 
 	tests: avoid intermittent ulimit -v failures
 	* init.cfg (get_min_ulimit_v_): Increase the determined
@@ -4166,7 +4818,7 @@
 	This was noticed on i686 linux at:
 	http://hydra.nixos.org/build/28990456
 
-2015-12-17  Pádraig Brady  <P@draigBrady.com>
+2015-12-16  Pádraig Brady  <P@draigBrady.com>
 
 	build: ensure all files are writable in the tarball
 	* Makefile.am (dist-hook): Ensure all files are writable
@@ -4241,7 +4893,7 @@
 	* src/stdbuf.c: Likewise.
 	* tests/misc/seq-precision.sh: Likewise.
 
-2015-12-14  Pádraig Brady  <P@draigBrady.com>
+2015-12-13  Pádraig Brady  <P@draigBrady.com>
 
 	maint: remove form feed characters from sources
 	These are no longer useful and can impact viewing
@@ -4324,7 +4976,7 @@
 
 	Suggested by Dan Jacobson in http://bugs.gnu.org/22041
 
-2015-11-28  Pádraig Brady  <P@draigBrady.com>
+2015-11-27  Pádraig Brady  <P@draigBrady.com>
 
 	build: support reproducible builds with consistent man pages
 	Use a consistent date in the generated man pages
@@ -4367,12 +5019,14 @@
 	* src/tr.c (usage): Improve the -s summary to say it always
 	operates on the last specified SET.
 
+2015-11-24  Pádraig Brady  <P@draigBrady.com>
+
 	doc: provide an example for prefixing all tail output lines
 	* doc/coreutils.texi (tail invocation): Provide an example using awk
 	to convert tail ==> file <== headers to file: prefixes on each line.
 	Suggested by Stephen Shirley.
 
-2015-11-24  Dmitry Monakhov  <dmonakhov@openvz.org>
+2015-11-23  Dmitry Monakhov  <dmonakhov@openvz.org>
 
 	copy: fix copying of extents beyond the apparent file size
 	fallocate can allocate extents beyond EOF via FALLOC_FL_KEEP_SIZE.
@@ -4438,7 +5092,7 @@
 	temp files during the test as an error rather than a failure.
 	Fixes http://bugs.gnu.org/21130
 
-2015-11-19  Pádraig Brady  <P@draigBrady.com>
+2015-11-18  Pádraig Brady  <P@draigBrady.com>
 
 	build: fix VPATH build with --disable-dependency-tracking
 	* src/local.mk: Run `mkdir -p src` in all our explicit rules,
@@ -4645,6 +5299,8 @@
 	build: update gnulib submodule to latest
 	Includes support for "shell-escape" from quotearg
 
+2015-11-03  Pádraig Brady  <P@draigBrady.com>
+
 	md5sum: ensure a single status line per file
 	* src/md5sum.c: Use the same file name escaping method used
 	when generating and checking checksums.  I.E. ensure a single line
@@ -4656,7 +5312,7 @@
 	* tests/misc/md5sum.pl: Remove quotes from expected status output.
 	* tests/misc/sha1sum.pl: Likewise.
 
-2015-11-04  Pádraig Brady  <P@draigBrady.com>
+2015-11-03  Pádraig Brady  <P@draigBrady.com>
 
 	all: replace most uses of quotearg_colon() with quote()
 	Related to commit v8.24-61-g6796698 this provides
@@ -4689,13 +5345,11 @@
 	(ls invocation): Likewise for the -w option.
 	Fixes http://bugs.gnu.org/21809
 
-2015-10-29  Pádraig Brady  <P@draigBrady.com>
+2015-10-28  Pádraig Brady  <P@draigBrady.com>
 
 	maint: allow 'all:' tag in commit summaries
 	To tag changes that are user visible
 	and affect all (or many) commands.
-
-2015-10-28  Pádraig Brady  <P@draigBrady.com>
 
 	doc: clarify iso-8601 formats used by ls and du
 	* doc/coreutils.texi (du invocation): Remove 'like' from
@@ -4769,6 +5423,8 @@
 	* tests/ls/w-option.sh: Add a test case.
 	* NEWS: Mention the bug fix.
 
+2015-10-20  Pádraig Brady  <P@draigBrady.com>
+
 	ls: allow -w0 to mean no limit on line length
 	* src/ls.c (print_with_separator): Renamed from print_with_commas,
 	and parameterized to accept the separator to print.
@@ -4836,7 +5492,7 @@
 	* doc/coreutils.texi (factor invocation): Update note about
 	factor limits, as we can factor 128 bit numbers without GMP.
 
-2015-10-19  Pádraig Brady  <P@draigBrady.com>
+2015-10-18  Pádraig Brady  <P@draigBrady.com>
 
 	doc: reference shuf(1) from the sort (-R) man page
 	* man/sort.x: Cross reference with shuf(1).
@@ -4922,7 +5578,7 @@
 	* tests/mkdir/parents.sh: Likewise.
 	* tests/mkdir/perm.sh: Likewise.
 
-2015-10-12  Pádraig Brady  <P@draigBrady.com>
+2015-10-11  Pádraig Brady  <P@draigBrady.com>
 
 	tail: no longer warn about unrecognized file systems
 	* src/tail.c (fremote): No longer prompt the user to email
@@ -4949,7 +5605,7 @@
 	This very_expensive_ test takes over a minute on a i3-2310M,
 	with RAM backed /tmp.
 
-2015-10-08  Pádraig Brady  <P@draigBrady.com>
+2015-10-07  Pádraig Brady  <P@draigBrady.com>
 
 	tests: adjust recent changes to virtual memory limits
 	* tests/dd/no-allocate.sh: Account for timeout(1) when
@@ -4969,7 +5625,7 @@
 
 	Reported by Ondrej Oprala
 
-2015-10-04  Paul Eggert  <eggert@cs.ucla.edu>
+2015-10-03  Paul Eggert  <eggert@cs.ucla.edu>
 
 	tee: simplify argv handling
 	* src/tee.c (tee_files): Last arg is now char ** instead of char
@@ -4977,8 +5633,6 @@
 	files[-1], not files[nfiles], as that is a bit faster and simpler.
 	Latter problem pointed out by Rainer Deyke in:
 	http://bugs.gnu.org/21611
-
-2015-10-03  Paul Eggert  <eggert@cs.ucla.edu>
 
 	build: update gnulib submodule to latest
 
@@ -4990,7 +5644,7 @@
 	Avoid integer overflow if we run off the end of the file.
 	Tell compiler that a write cannot write more bytes than requested.
 
-2015-10-03  Pádraig Brady  <P@draigBrady.com>
+2015-10-02  Pádraig Brady  <P@draigBrady.com>
 
 	tail: handle kernel dentry unlink race
 	Avoid the intermittent loss of "... has become inaccessible" messages.
@@ -5009,7 +5663,7 @@
 	Reported by Assaf Gordon and Ludovic Courtès.
 	Fixes http://bugs.gnu.org/21460
 
-2015-10-03  Pádraig Brady  <P@draigBrady.com>
+2015-10-02  Pádraig Brady  <P@draigBrady.com>
 
 	build: avoid -Wstrict-overflow warnings with GCC 5.1 on 32 bit
 	* src/shred.c (dopass): With -O2, GCC 5.1 gives "assuming signed
@@ -5034,7 +5688,7 @@
 	for applications relying on terminfo".
 	Reported also by Lukas Sabota and Sven-Hendrik Haase.
 
-2015-09-23  Dave Chiluk  <chiluk@canonical.com>
+2015-09-22  Dave Chiluk  <chiluk@canonical.com>
 
 	df: prioritize mounts nearer the device root
 	In the presence of bind mounts of a device, the 4th "mount root" field
@@ -5049,7 +5703,7 @@
 	target is nearer the root of the device.
 	* NEWS: Mention the change in behavior.
 
-2015-09-23  Pádraig Brady  <P@draigBrady.com>
+2015-09-22  Pádraig Brady  <P@draigBrady.com>
 
 	build: update gnulib submodule to latest
 	This includes a change to propagate the 4th "mount root"
@@ -5104,6 +5758,8 @@
 	libselinux-2.4-3, lookup the class with string_to_security_class(),
 	rather than using defines from flask.h.
 
+2015-09-21  Pádraig Brady  <P@draigBrady.com>
+
 	sort,numfmt: with --debug, diagnose failure to set locale
 	* src/sort.c (main): With --debug, warn upon setlocale() failure,
 	which can happen due to incorrectly specified environment variables,
@@ -5134,7 +5790,7 @@
 	* doc/coreutils.texi (shred invocation):
 	Remove documentation for -NUMBER option.
 
-2015-09-12  Assaf Gordon  <assafgordon@gmail.com>
+2015-09-11  Assaf Gordon  <assafgordon@gmail.com>
 
 	numfmt: use new set-fields module to parse --field
 	numfmt --field=LIST can accept the same options as cut.
@@ -5146,7 +5802,7 @@
 	* tests/misc/numfmt.pl: add new tests, adapt current tests to new
 	  error message wording from set-fields.c
 
-2015-09-12  Assaf Gordon  <assafgordon@gmail.com>
+2015-09-11  Assaf Gordon  <assafgordon@gmail.com>
 
 	cut: refactor into set-fields module
 	Extract the functionality of parsing --field=LIST into a separate
@@ -5184,7 +5840,7 @@
 	* src/tail.c (main): Likewise.
 	* src/tsort.c (tsort): Likewise.
 
-2015-09-03  Pádraig Brady  <P@draigBrady.com>
+2015-09-02  Pádraig Brady  <P@draigBrady.com>
 
 	tests: test numfmt stdin behavior
 	* tests/misc/tty-eof.pl: Add numfmt to the list of programs
@@ -5216,7 +5872,7 @@
 	wrt auto parsing oct and hex numbers.
 	* tests/misc/base64.pl: Add tests for invalid wrap values.
 
-2015-09-03  Pádraig Brady  <P@draigBrady.com>
+2015-09-02  Pádraig Brady  <P@draigBrady.com>
 
 	base32: A new program similar to base64
 	Suggested in https://bugzilla.redhat.com/1250113
@@ -5282,7 +5938,7 @@
 	(shred invocation): Likewise for -u.
 	(tee invocation): Likewise for -p.
 
-2015-08-23  Paul Eggert  <eggert@cs.ucla.edu>
+2015-08-22  Paul Eggert  <eggert@cs.ucla.edu>
 
 	ls: allow -w18446744073709551616
 	Problem reported by Beco in: http://bugs.gnu.org/21325
@@ -5296,7 +5952,7 @@
 	.x files in the 'man/' subdirectory, i.e., files exceeding a line count
 	of 20 or a byte count of 1000, contain a proper Copyright notice.
 
-2015-07-24  Paul Eggert  <eggert@cs.ucla.edu>
+2015-07-23  Paul Eggert  <eggert@cs.ucla.edu>
 
 	build: fprintftime/nstrftime API changes
 	* bootstrap.conf (gnulib_modules): Add time_rz,
@@ -5312,7 +5968,7 @@
 
 	build: update gnulib submodule to latest
 
-2015-07-22  Pádraig Brady  <P@draigBrady.com>
+2015-07-21  Pádraig Brady  <P@draigBrady.com>
 
 	doc: discourage use of uname -i and -p options
 	* src/uname.c (usage): State that the non POSIX -i and -p options
@@ -5350,7 +6006,7 @@
 	http://ncurses.scripts.mit.edu/?p=ncurses.git;a=blobdiff;\
 	f=misc/terminfo.src;h=ce9bdc3b;hp=7e576ef1;hb=be512fa0;hpb=ee1bcda2
 
-2015-07-07  Pádraig Brady  <P@draigBrady.com>
+2015-07-06  Pádraig Brady  <P@draigBrady.com>
 
 	shred: fix pattern selection for certain iteration counts
 	This was detected in about 25% of runs with gcc -fsanitize=address
@@ -5432,7 +6088,7 @@
 	* tests/misc/numfmt.pl: Likewise.
 	* tests/mv/i-3.sh: Skip on *BSD not just FreeBSD.
 
-2015-07-02  Pádraig Brady  <P@draigBrady.com>
+2015-07-01  Pádraig Brady  <P@draigBrady.com>
 
 	wc: fix reading of /proc files on aarch64
 	tests/misc/wc-proc.sh fails when the page size is 64K
@@ -5518,7 +6174,7 @@
 
 	¹ https://blog.nelhage.com/2010/10/amd64-and-va_arg/
 
-2015-06-28  Pádraig Brady  <P@draigBrady.com>
+2015-06-27  Pádraig Brady  <P@draigBrady.com>
 
 	maint: clarify df's use of device IDs from /proc/self/mountinfo
 	* src/df.c (filter_mount_list): Clarify why we still stat even
@@ -5568,12 +6224,12 @@
 	build: update to latest gnulib
 	Mainly for -fsanitize=address and -fsanitize=undefined fixes
 
+2015-06-24  Pádraig Brady  <P@draigBrady.com>
+
 	build: allow build to complete with -fsanitize=address
 	* src/make-prime-list.c (main): When building with
 	the above option, avoid this build stopping error:
 	"LeakSanitizer: detected memory leaks"
-
-2015-06-24  Pádraig Brady  <P@draigBrady.com>
 
 	maint: avoid undefined behavior in qsort call
 	GCC 5.1.1 -fsanitize=undefined with glibc 2.21 is returning:
@@ -5624,6 +6280,8 @@
 	rather than hardcoding at 18 for better portability.
 	* tests/misc/numfmt.pl: Restrict limit tests to supported platforms.
 
+2015-06-21  Pádraig Brady  <P@draigBrady.com>
+
 	numfmt: handle leading zeros correctly
 	* src/numfmt.c (simple_strtod_int): Don't count leading zeros
 	as significant digits.  Also have leading zeros as optional
@@ -5631,7 +6289,7 @@
 	* tests/misc/numfmt.pl: Add test cases.
 	* NEWS: Mention the fix.
 
-2015-06-22  Pádraig Brady  <P@draigBrady.com>
+2015-06-21  Pádraig Brady  <P@draigBrady.com>
 
 	numfmt: avoid integer overflow when rounding
 	Due to existing limits this is usually triggered
@@ -5648,7 +6306,7 @@
 	* tests/misc/numfmt.pl: Add previously failing test cases.
 	* NEWS: Mention the fix.
 
-2015-06-21  Pádraig Brady  <P@draigBrady.com>
+2015-06-20  Pádraig Brady  <P@draigBrady.com>
 
 	numfmt: support user specified output precision
 	* src/numfmt.c (usage): Update the --format description
@@ -5795,7 +6453,7 @@
 	(clean-local):
 	Port to POSIX shell, which doesn't allow 'for i in ; do ...'.
 
-2015-06-03  Pádraig Brady  <P@draigBrady.com>
+2015-06-02  Pádraig Brady  <P@draigBrady.com>
 
 	build: add a dependency on the gnulib tempname module
 	* bootstrap.conf: Add "tempname" which is needed by mktemp(1).
@@ -5807,12 +6465,10 @@
 	However --conditional-dependencies is not enabled, since it
 	currently precludes the inclusion of gnulib tests.
 
-2015-06-02  Pádraig Brady  <P@draigBrady.com>
+2015-06-01  Pádraig Brady  <P@draigBrady.com>
 
 	build: update to latest gnulib
 	Mainly with build fixes for Mac OS X.
-
-2015-06-01  Pádraig Brady  <P@draigBrady.com>
 
 	tests: fix race in tail test without inotify
 	* tests/tail-2/wait.sh: Without inotify, skip a portion of the test
@@ -5827,7 +6483,7 @@
 	avoids a false failure on slow/loaded systems.
 	Noticed at http://hydra.nixos.org/build/22766288
 
-2015-05-30  Pádraig Brady  <P@draigBrady.com>
+2015-05-29  Pádraig Brady  <P@draigBrady.com>
 
 	maint: avoid new coverity warnings
 	* src/sync.c (sync_arg): Initialise variable to avoid
@@ -5846,7 +6502,7 @@
 	* src/tac.c (tac_seekable): Likewise.
 	* src/ls.c (gobble_file): Likewise.
 
-2015-05-28  Pádraig Brady  <P@draigBrady.com>
+2015-05-27  Pádraig Brady  <P@draigBrady.com>
 
 	build: remove workarounds for unsupported gettext versions
 	Now that we depend on gettext >= 0.19.2 remove the workaround
@@ -5864,7 +6520,7 @@
 	* bootstrap: Remove moot warning (resyncing with gnulib).
 	* configure.ac (AC_PREREQ): Change to 2.69 (now 3 years old).
 
-2015-05-28  Pádraig Brady  <P@draigBrady.com>
+2015-05-27  Pádraig Brady  <P@draigBrady.com>
 
 	tests: ln/hard-to-sym FAIL rather than ERROR when ln fails
 	* tests/ln/hard-to-sym.sh: Only call framework_failure_ when ln
@@ -5877,14 +6533,14 @@
 	in tests/cp/link-symlink.sh
 	* tests/cp/link-deref.sh: Adjust accordingly.
 
-2015-05-26  Pádraig Brady  <P@draigBrady.com>
+2015-05-25  Pádraig Brady  <P@draigBrady.com>
 
 	maint: remove sys/types.h include order check
 	* src/system.h: This was inadvertently ineffective due to
 	a typo in commit v8.9-10-ge1aaf89 (Jan 2011), but has
 	not caused any issues, so remove.
 
-2015-05-23  Pádraig Brady  <P@draigBrady.com>
+2015-05-22  Pádraig Brady  <P@draigBrady.com>
 
 	mkdir: fix -pZ with existing parent directories
 	When the parent directory exists and has a different
@@ -5976,7 +6632,7 @@
 	* tests/split/suffix-auto-length.sh: Add test cases.
 	Fixes http://bugs.gnu.org/20511
 
-2015-05-13  Assaf Gordon  <assafgordon@gmail.com>
+2015-05-12  Assaf Gordon  <assafgordon@gmail.com>
 
 	doc: clarify the operation of wc -L
 	* src/wc.c (usage): State that it calculates display width.
@@ -6131,7 +6787,7 @@
 	build: rewrite is_ENOTSUP without an #if directive
 	* src/system.h (is_ENOTSUP): Avoid in-function #if directive.
 
-2015-05-10  Jim Meyering  <meyering@fb.com>
+2015-05-09  Jim Meyering  <meyering@fb.com>
 
 	build: avoid a warning form gcc's new -Wlogical-op
 	Without this change, very recent gcc (e.g., version 6.0.0 20150509)
@@ -6238,7 +6894,7 @@
 	* configure.ac (AM_GNU_GETTEXT_VERSION): Likewise.
 	Reported by Bernhard Voelker
 
-2015-04-27  Paul Eggert  <eggert@cs.ucla.edu>
+2015-04-26  Paul Eggert  <eggert@cs.ucla.edu>
 
 	ls: on GNU/Linux, remove dependency on libacl
 	* src/local.mk (src_ls_LDADD): Change from LIB_ACL to LIB_HAS_ACL.
@@ -6312,7 +6968,7 @@
 	* NEWS: Mention the bug fix.
 	Reported at http://bugzilla.redhat.com/1199679
 
-2015-04-09  Mitchel Humpherys  <mitch.special@gmail.com>
+2015-04-08  Mitchel Humpherys  <mitch.special@gmail.com>
 
 	doc: correct pluralization for mkfifo and mknod
 	* doc/coreutils.texi: `mkfifo' and `mknod' use the optContext macro
@@ -6335,7 +6991,7 @@
 	(main): Avoid a "definitely lost" memory leak warning from valgrind,
 	reported by Bernhard Voelker.
 
-2015-04-01  Pádraig Brady  <P@draigBrady.com>
+2015-03-31  Pádraig Brady  <P@draigBrady.com>
 
 	doc: clarify that ls --sort=time is newest first
 	* src/ls.c (usage): Add punctuation to avoid ambiguity in the
@@ -6357,7 +7013,7 @@
 	* NEWS: Mention the bug.
 	Fixes http://bugs.gnu.org/19760
 
-2015-03-29  Pádraig Brady  <P@draigBrady.com>
+2015-03-28  Pádraig Brady  <P@draigBrady.com>
 
 	doc: move numfmt info to the 'Numeric operations' section
 	* doc/coreutils.texi: Move numfmt info to this section,
@@ -6442,6 +7098,8 @@
 	uses set -F for this, but that's moot here.  Also correct the
 	find(1) expression to include the -o between each wildcard.
 
+2015-03-19  Pádraig Brady  <P@draigBrady.com>
+
 	maint: fix wildcard quoting in sc_tests_executable
 	* cfg.mk (sc_tests_executable): If there are files with
 	$TEST_EXTENSIONS in the current directory, then the
@@ -6449,7 +7107,7 @@
 	could result in globbing and an inconsequential run.
 	find(1) produces warnings only with more than one expansion.
 
-2015-03-20  Kristoffer Brånemyr  <ztion1@yahoo.se>
+2015-03-19  Kristoffer Brånemyr  <ztion1@yahoo.se>
 
 	wc: speedup counting of short lines
 	Using a test file generated with:
@@ -6487,7 +7145,7 @@
 	many small arguments that overflow the buffer.
 	* tests/misc/yes.sh: Add a test case for the many small arguments case.
 
-2015-03-10  Pádraig Brady  <P@draigBrady.com>
+2015-03-09  Pádraig Brady  <P@draigBrady.com>
 
 	yes: output data more efficiently
 	yes(1) may be used to generate repeating patterns of text
@@ -6557,7 +7215,7 @@
 	* tests/local.mk: Reference the new test.
 	Fixes http://bugs.gnu.org/20029
 
-2015-03-07  Pádraig Brady  <P@draigBrady.com>
+2015-03-06  Pádraig Brady  <P@draigBrady.com>
 
 	build: fix make dependencies for test.1
 	In certain parallel build situations this would give the error:
@@ -6712,7 +7370,7 @@
 	function, so that stderr of the wrapped command is unchanged,
 	allowing for verification of the contents.
 
-2015-02-17  Bernhard Voelker  <mail@bernhard-voelker.de>
+2015-02-16  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	maint: prefer STREQ_LEN and STRPREFIX over strncmp in all cases
 	* cfg.mk (sc_prohibit_strncmp): Improve the search pattern: use
@@ -6729,7 +7387,7 @@
 	* src/tac.c (tac_seekable): Likewise.
 	* src/who.c (scan_entries): Likewise.
 
-2015-02-17  Pádraig Brady  <P@draigBrady.com>
+2015-02-16  Pádraig Brady  <P@draigBrady.com>
 
 	stty: fix setting of 'extproc' on BSD
 	This setting is unusual on BSD as it's read normally in the local
@@ -6754,7 +7412,7 @@
 	(Алексей Шилин): Convert name to latin1 ("Aleksej Shilin")
 	to improve the sort order of the generated 'THANKS' file.
 
-2015-02-12  Bernhard Voelker  <mail@bernhard-voelker.de>
+2015-02-11  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	maint: sort THANKS using our own gear
 	At least 'sort' on openSUSE/Fedora have a bug in the case-folding code
@@ -6775,7 +7433,7 @@
 	so no need to filter portions of them.
 	Reported by Bernhard Voelker.
 
-2015-02-11  Pádraig Brady  <P@draigBrady.com>
+2015-02-10  Pádraig Brady  <P@draigBrady.com>
 
 	build: update to latest gnulib
 	This includes a change to require --with-libmount
@@ -6787,7 +7445,7 @@
 	* gl/modules/tempname: Likewise.
 	* doc/.gitignore: Add new gendocs_template_min gnulib script.
 
-2015-02-11  Pádraig Brady  <P@draigBrady.com>
+2015-02-10  Pádraig Brady  <P@draigBrady.com>
 
 	maint: exclude diff files from long lines check
 	* cfg.mk: Add .diff files to the exclusion expression
@@ -6832,7 +7490,7 @@
 	first empty line) and the footer (all past the next empty line) from
 	'THANKS.in' for the check.
 
-2015-02-09  Bernhard Voelker  <mail@bernhard-voelker.de>
+2015-02-08  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	maint: sort contributors in THANKS.in
 	* THANKS.in: Document the preferred sort order as a comment
@@ -6945,7 +7603,7 @@
 	* gl/lib/regexec.c.diff: Likewise.
 	* gl/lib/tempname.h.diff: Likewise.
 
-2015-02-03  Bernhard Voelker  <mail@bernhard-voelker.de>
+2015-02-02  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	tests: avoid a FP on aarch64 when comparing env/printenv output
 	The following test fails on aarch64 on openSUSE's OpenBuildService
@@ -7062,7 +7720,7 @@
 	automatically updated via the emacs hook snippet at the end
 	of the file.
 
-2015-01-24  Pádraig Brady  <P@draigBrady.com>
+2015-01-23  Pádraig Brady  <P@draigBrady.com>
 
 	stty: only print supported options for combined options
 	* src/stty.c (usage): Don't reference unsupported options,
@@ -7077,7 +7735,7 @@
 	* doc/coreutils.texi (stty invocation): Mention the option, and that
 	it's not currently supported on Linux.
 
-2015-01-24  Pádraig Brady  <P@draigBrady.com>
+2015-01-23  Pádraig Brady  <P@draigBrady.com>
 
 	stty: document the 'discard' character setting
 	The equivalent of this is 'flush', but that was never documented
@@ -7093,7 +7751,7 @@
 	(display_changed): Likewise.
 	(usage): Document the 'discard' option.
 
-2015-01-24  Pádraig Brady  <P@draigBrady.com>
+2015-01-23  Pádraig Brady  <P@draigBrady.com>
 
 	stty: add support for extproc/LINEMODE
 	Add support for the "extproc" option which is well described at:
@@ -7107,7 +7765,7 @@
 	and reference the related RFC 1116.
 	* NEWS: Mention the new feature.
 
-2015-01-20  Bernhard Voelker  <mail@bernhard-voelker.de>
+2015-01-19  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	tests: use returns_ function for new split test
 	* tests/split/record-sep.sh: Use the recently added returns_ function
@@ -7189,7 +7847,7 @@
 	* cfg.mk (sc_prohibit_and_fail_1): Add a syntax check
 	to avoid new instances of this issue.
 
-2015-01-12  Pádraig Brady  <P@draigBrady.com>
+2015-01-11  Pádraig Brady  <P@draigBrady.com>
 
 	tests: avoid skipping some df tests with libmount
 	* tests/df/no-mtab-status.sh: Provide libmount placeholders,
@@ -7220,7 +7878,7 @@
 	* cfg.mk(sc_long_lines): Skip if required wc and sed options
 	are not supported, which is currently the case on OS X.
 
-2015-01-06  Paul Eggert  <eggert@cs.ucla.edu>
+2015-01-05  Paul Eggert  <eggert@cs.ucla.edu>
 
 	shuf: do not mishandle 'shuf -i0-0 1'
 	Problem reported by Daiki Ueno in: http://bugs.gnu.org/19520
@@ -7255,12 +7913,14 @@
 	help2man can match it and align appropriately in its own section.
 	Fixes http://bugs.gnu.org/19228
 
+2014-12-31  Pádraig Brady  <P@draigBrady.com>
+
 	build: update to latest gnulib
 	Pick up an errno adjustment in xstrtol() that fixes
 	a spurious test failure on Darwin 14.0.0.
 	Also update copyright year to 2015 avoiding a syntax-check failure.
 
-2015-01-01  Pádraig Brady  <P@draigBrady.com>
+2014-12-31  Pádraig Brady  <P@draigBrady.com>
 
 	maint: update all copyright year number ranges
 	Run "make update-copyright" and then...
@@ -7269,7 +7929,7 @@
 	* tests/du/bind-mount-dir-cycle-v2.sh: Fix case in copyright message,
 	so that year is updated automatically in future.
 
-2014-12-30  Pádraig Brady  <P@draigBrady.com>
+2014-12-29  Pádraig Brady  <P@draigBrady.com>
 
 	tests: fix possible 8 minute running time of inotify-rotate.sh
 	Commit v8.23-63-g111a2b9 removed the expensive tag on this test,
@@ -7280,7 +7940,7 @@
 	Also adjust the polling parameters used on systems without inotify
 	so that the test completes within about 15 seconds.
 
-2014-12-30  Pádraig Brady  <P@draigBrady.com>
+2014-12-29  Pádraig Brady  <P@draigBrady.com>
 
 	build: update to latest gnulib
 	Included in this are gnulib changes 3ea43e02 2768ceb7
@@ -7308,7 +7968,7 @@
 
 	* doc/coreutils.texi (Block size): Fix the stale link.
 
-2014-12-25  Pádraig Brady  <P@draigBrady.com>
+2014-12-24  Pádraig Brady  <P@draigBrady.com>
 
 	tests: fix error message check on some systems
 	http://hydra.nixos.org/build/18129583 identified (on OS X)
@@ -7364,7 +8024,7 @@
 	* tests/misc/shred-size.sh: Likewise.
 	* tests/misc/stty-row-col.sh: Likewise.
 
-2014-12-19  KO Myung-Hun  <komh@chollian.net>
+2014-12-18  KO Myung-Hun  <komh@chollian.net>
 
 	build: add $(EXEEXT) suffix to man page make targets
 	* man/local.mk: Add $(EXEEXT) suffix to the executables,
@@ -7397,6 +8057,8 @@
 	Reported by Bernhard Voelker in:
 	http://lists.gnu.org/archive/html/bug-gnulib/2014-12/msg00191.html
 	* src/dd.c (scanargs): s/IN/OUT/.
+
+2014-12-15  Paul Eggert  <eggert@cs.ucla.edu>
 
 	dd: diagnose too-large numbers better
 	Reported by Isabella Parakiss in:
@@ -7440,7 +8102,7 @@
 	   47 ce ed a4 be be be  00 00 00 00 00 00 00 00  ...
 	               ^
 
-2014-12-02  Pádraig Brady  <P@draigBrady.com>
+2014-12-01  Pádraig Brady  <P@draigBrady.com>
 
 	maint: avoid signed overflow warning with -O3
 	Prompted by the implicit -O3 added by american-fuzzy-lop,
@@ -7460,7 +8122,7 @@
 	* src/pr.c (cols_ready_to_print): Increment an unsigned type to
 	avoid the subsequent signed overflow warning.
 
-2014-12-02  Boris Ranto  <branto@redhat.com>
+2014-12-01  Boris Ranto  <branto@redhat.com>
 
 	du: handle sub-bind-mount cycles gracefully
 	This patch fixes the handling of sub-bind-mount cycles which are
@@ -7524,7 +8186,7 @@
 	* test/dd/ascii.sh: Use the coreutils printf in this test
 	rather than the system one, to avoid portability issues.
 
-2014-11-26  Paul Eggert  <eggert@cs.ucla.edu>
+2014-11-25  Paul Eggert  <eggert@cs.ucla.edu>
 
 	build: port new rule for coreutils.h to old Bash
 	Reported by Ted Carr in: http://bugs.gnu.org/19184
@@ -7579,7 +8241,7 @@
 
 	Reported in http://bugs.debian.org/737399
 
-2014-11-22  Pádraig Brady  <P@draigBrady.com>
+2014-11-21  Pádraig Brady  <P@draigBrady.com>
 
 	tests: add a case verifying mv on case insensitive file systems
 	* NEWS: Update the recent entry to also mention the avoidance
@@ -7589,8 +8251,6 @@
 	* tests/mv/hardlink-case.sh: Test the issue on HFS+.
 	* tests/local.mk: Reference the new test case.
 	* tests/mv/vfat: Remove an old related but unused test case.
-
-2014-11-21  Pádraig Brady  <P@draigBrady.com>
 
 	doc: mention how to avoid newlines impacting ls -1
 	* src/ls.c (usage): Mention the -b and -q options
@@ -7607,7 +8267,7 @@
 	This is needed on >= Fedora 21 for example,
 	while it also works on earlier releases.
 
-2014-11-21  Boris Ranto  <branto@redhat.com>
+2014-11-20  Boris Ranto  <branto@redhat.com>
 
 	mv: fail when moving a file to a hardlink
 	We may run into a race condition if we treat hard links to the same file
@@ -7630,14 +8290,14 @@
 	* tests/mv/i-4.sh: Likewise.
 	* tests/mv/symlink-onto-hardlink-to-self.sh: Likewise.
 
-2014-11-18  Pádraig Brady  <P@draigBrady.com>
+2014-11-17  Pádraig Brady  <P@draigBrady.com>
 
 	maint: run strftime syntax check on newer systems
 	* cfg.mk (sc_strftime_check): Adjust regex to handle
 	newer glibc info formatting with different indentation
 	and quoting.
 
-2014-10-30  Pádraig Brady  <P@draigBrady.com>
+2014-10-29  Pádraig Brady  <P@draigBrady.com>
 
 	maint: tests: fix comments about retry_delay_
 	* tests/tail-2/F-vs-missing.sh: Comment with the correct total delay.
@@ -7693,14 +8353,14 @@
 	(sc_long_lines): Prefilter with wc -L to only identify lines
 	in files that have lines longer than 80 characters.
 
-2014-10-23  Mike Frysinger  <vapier@gentoo.org>
+2014-10-22  Mike Frysinger  <vapier@gentoo.org>
 
 	tests: d_type-check: don't hardcode the C library name
 	* tests/d_type-check: The hardcoded name doesn't hold true for all
 	Linux/glibc platforms, let alone Linux/non-glibc.
 	Use ctypes.util.find_library() instead to search for the library.
 
-2014-10-17  Bernhard Voelker  <mail@bernhard-voelker.de>
+2014-10-16  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	tests: avoid false failure when comparing /proc files
 	At least the MHz number in /proc/cpuinfo may change, thus leading to
@@ -7715,6 +8375,8 @@
 	* cp/proc-zero-len.sh: Search the 'err' file
 	for the error to ignore, not stdin.
 
+2014-10-15  Pádraig Brady  <P@draigBrady.com>
+
 	chroot: call chroot() unconditionally to handle bind mounted "/"
 	* src/chroot.c (is_root): Adjust to compare canonicalized paths
 	rather than inodes, to handle (return false in) the case where
@@ -7728,7 +8390,7 @@
 	* NEWS: Mention the bug fixes.
 	Fixes http://bugs.gnu.org/18736
 
-2014-10-15  Pádraig Brady  <P@draigBrady.com>
+2014-10-14  Pádraig Brady  <P@draigBrady.com>
 
 	copy: avoid an extraneous error when reporting errors
 	* src/copy.c (copy_reg): If sparse_copy() failed, then an
@@ -7739,7 +8401,7 @@
 	if the output is not to a regular file.
 	* NEWS: Mention the improvement.
 
-2014-10-15  Pádraig Brady  <P@draigBrady.com>
+2014-10-14  Pádraig Brady  <P@draigBrady.com>
 
 	cp: avoid speculative preallocation with --sparse=always
 	With --sparse=always use fallocate(...PUNCH_HOLE...) to
@@ -7753,7 +8415,7 @@
 	(extent_copy): Likewise.
 	* NEWS: Mention the improvement.
 
-2014-10-15  Pádraig Brady  <P@draigBrady.com>
+2014-10-14  Pádraig Brady  <P@draigBrady.com>
 
 	copy: detect smaller holes than the copy buffer size
 	Previously cp would not detect runs of NULs that were
@@ -7798,20 +8460,20 @@
 	* src/tac.c (copy_to_temp): Increment an unsigned type to
 	avoid the subsequent signed overflow warning.
 
-2014-10-08  Jim Meyering  <meyering@fb.com>
+2014-10-07  Jim Meyering  <meyering@fb.com>
 
 	tests: split/b-chunk.sh: avoid spurious fail on non-Linux
 	* tests/split/b-chunk.sh: Skip each file that does not exist.
 	Some systems lack /proc/version or /sys/kernel/profiling
 
-2014-10-08  Pádraig Brady  <P@draigBrady.com>
+2014-10-07  Pádraig Brady  <P@draigBrady.com>
 
 	maint: avoid syntax-check failures in previous patch
 	* tests/misc/od-j.sh: Non standard comparison order.
 	* tests/split/b-chunk.sh: Confusing input file name.
 	* tests/tail-2/tail-c.sh: Redundant require ulimit.
 
-2014-10-08  Paul Eggert  <eggert@cs.ucla.edu>
+2014-10-07  Paul Eggert  <eggert@cs.ucla.edu>
 
 	wc: don't miscount /sys and similar file systems
 	Fix similar problems in head, od, split, tac, and tail.
@@ -7863,7 +8525,7 @@
 	files that may rely upon it.  This fixes tests/cp/nfs-removal-race.sh
 	which references dlsym() from libdl.
 
-2014-10-02  Bernhard Voelker  <mail@bernhard-voelker.de>
+2014-10-01  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	maint: avoid double semicolon syntax check failure
 	A syntax-check recently added to gnulib would trigger a failure
@@ -7942,7 +8604,7 @@
 
 	Fix this usage by simply replacing "e.g." with "example".
 
-2014-09-23  Bernhard Voelker  <mail@bernhard-voelker.de>
+2014-09-22  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	build: pass program name to help2man after other options
 	* man/local.mk (.x.1): Move the program name argument down after
@@ -8114,7 +8776,7 @@
 	* cfg.mk (sc_some_programs_must_avoid_exit_failure): s/exit/return/.
 	* src/whoami.c (main): Reinstate translation marker for diagnostic.
 
-2014-09-09  Paul Eggert  <eggert@cs.ucla.edu>
+2014-09-08  Paul Eggert  <eggert@cs.ucla.edu>
 
 	maint: avoid file-scope names of the form _[a-z]*
 	The C standard says this isn't portable, if you include
@@ -8187,7 +8849,7 @@
 	(stdbuf invocation): Document that the command is installed
 	optionally.
 
-2014-09-07  Bernhard Voelker  <mail@bernhard-voelker.de>
+2014-09-06  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	doc: fix typos
 	* doc/coreutils.texi: Fix normal typos:
@@ -8206,7 +8868,7 @@
 	Reported by Yureruchihirosan via OKANO Takayoshi in:
 	http://bugs.gnu.org/18394
 
-2014-08-23  Pádraig Brady  <P@draigBrady.com>
+2014-08-22  Pádraig Brady  <P@draigBrady.com>
 
 	maint: ensure fiemap extents flags are compared correctly
 	* src/extent-scan.c (extent_scan_read): Following on from the flags size
@@ -8433,7 +9095,7 @@
 	most likely have a different context that will test context
 	setting logic correctly.
 
-2014-07-18  Pádraig Brady  <P@draigBrady.com>
+2014-07-17  Pádraig Brady  <P@draigBrady.com>
 
 	maint: avoid a syntax-check warning in previous commit
 	* cfg.mk: Avoid warning for @AMDEP_TRUE@ usage in man/local.mk
@@ -8471,7 +9133,7 @@
 
 	Reported by Eric Blake
 
-2014-07-14  Pádraig Brady  <P@draigBrady.com>
+2014-07-13  Pádraig Brady  <P@draigBrady.com>
 
 	tests: fix portabilitiy issue in new od-endian test
 	* tests/misc/od-endian.sh: '\n' is not generally supported
@@ -8497,8 +9159,6 @@
 
 	maint: avoid clang -Wint-to-pointer-cast warning
 	* src/chroot.c: Explicitly cast int to pointer type.
-
-2014-07-13  Pádraig Brady  <P@draigBrady.com>
 
 	build: update gnulib submodule to latest
 	* gnulib: Sync recent cleanups and the fix for
@@ -8661,7 +9321,7 @@
 	* src/timeout.c: Likewise.
 	* src/truncate.c: Likewise.
 
-2014-07-04  Bernhard Voelker  <mail@bernhard-voelker.de>
+2014-07-03  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	maint: simplify parsing df's output in shell scripts
 	Avoid complicated and error-prone parsing of df's output via
@@ -8926,7 +9586,7 @@
 	Reported by Ondřej Vašík in http://bugzilla.redhat.com/1104244
 	Fixes http://bugs.gnu.org/17770
 
-2014-06-12  Pádraig Brady  <P@draigBrady.com>
+2014-06-11  Pádraig Brady  <P@draigBrady.com>
 
 	maint: suppress a theoretical buffer overflow warning
 	* src/numfmt.c (double_to_human): The printf format is built up in
@@ -8934,8 +9594,6 @@
 	However the size parameter passed to snprintf was too big by 1
 	when GROUP was true.  So decrease the buffer available to snprintf
 	to avoid this theoretical in practise but valid coverity warning.
-
-2014-06-11  Pádraig Brady  <P@draigBrady.com>
 
 	tests: fix version printing for ginstall in one test
 	* tests/install/d-slashdot.sh: 'ginstall' is the binary name
@@ -8967,7 +9625,7 @@
 	* gnulib: Update to latest.
 	* tests/init.sh: Update from gnulib.
 
-2014-06-11  Pádraig Brady  <P@draigBrady.com>
+2014-06-10  Pádraig Brady  <P@draigBrady.com>
 
 	build: update GCC warnings
 	* configure.ac: Remove the -Wsuggest-attribute=pure
@@ -9121,7 +9779,7 @@
 	doc: use nicer quotes
 	* doc/coreutils.texi: Add "@documentencoding UTF-8".
 
-2014-05-23  Pádraig Brady  <P@draigBrady.com>
+2014-05-22  Pádraig Brady  <P@draigBrady.com>
 
 	stat,tail: improve support for LogFS and ConfigFS
 	* src/stat.c (human_fstype): Add new file system ID definitions.
@@ -9330,7 +9988,7 @@
 	failure, show the differences in octal format in addition to
 	"binary files differ".  Simplify the creation of the 'in' file.
 
-2014-05-07  Paul Eggert  <eggert@cs.ucla.edu>
+2014-05-06  Paul Eggert  <eggert@cs.ucla.edu>
 
 	dd: fix conv=ascii, conv=ebcdic, conv=ibm to match POSIX
 	Problem reported by Don Baggett in <http:/bugs.gnu.org/17422>.
@@ -9343,7 +10001,7 @@
 	* tests/dd/ascii.sh: New file.
 	* tests/local.mk (all_tests): Add it.
 
-2014-05-07  Pádraig Brady  <P@draigBrady.com>
+2014-05-06  Pádraig Brady  <P@draigBrady.com>
 
 	tests: improve diagnostics when asserting empty files
 	* tests/chmod/c-option.sh: Use `compare /dev/null ... || fail=1`
@@ -9408,7 +10066,7 @@
 	* Makefile.am (gen-ChangeLog): Clear amend_git_log when we
 	don't set it, so that an envvar setting cannot cause trouble.
 
-2014-05-02  Pádraig Brady  <P@draigBrady.com>
+2014-05-01  Pádraig Brady  <P@draigBrady.com>
 
 	numfmt: improve processing throughput by 800%
 	The devmsg() calls that took quote_n() arguments,
@@ -9423,7 +10081,7 @@
 	performance change in this case.
 	* NEWS: Mention the significant performance improvement.
 
-2014-05-02  Pádraig Brady  <P@draigBrady.com>
+2014-05-01  Pádraig Brady  <P@draigBrady.com>
 
 	numfmt: support zero padding using --format="%010f"
 	* src/numfmt.c (setup_padding_buffer): Simplify the code by not
@@ -9535,14 +10193,14 @@
 	trimming issue, and to trigger without AddressSanitizer.
 	Fixes https://bugs.gnu.org/16171
 
-2014-04-25  Pádraig Brady  <P@draigBrady.com>
+2014-04-24  Pádraig Brady  <P@draigBrady.com>
 
 	maint: make ChangeLog generation more robust
 	* Makefile.am (gen-ChangeLog): Sync changes from GNU hello,
 	to ensure exit status is propagated, and to support an optional
 	git-log-fix file.
 
-2014-04-25  Edgars Irmejs  <edgars.irmejs@gmail.com>
+2014-04-24  Edgars Irmejs  <edgars.irmejs@gmail.com>
 
 	maint: remove trailing comma from enum to make gl/ c89 compat
 	* gl/lib/fadvise.c (fadvice_t): This might go to gnulib some day so
@@ -9584,7 +10242,7 @@
 
 	* src/dircolors.hin: Add hurd and mach-gnu-color.
 
-2014-04-17  Guilherme de Almeida Suckevicz  <guito.linux@gmail.com>
+2014-04-16  Guilherme de Almeida Suckevicz  <guito.linux@gmail.com>
 
 	ls: don't output colors with unknown TERM env variable
 	--colors controls whether to output colors depending on
@@ -9647,7 +10305,7 @@
 	* src/mknod.c: Likewise.
 	Fixes http://bugs.gnu.org/17220
 
-2014-04-05  Pádraig Brady  <P@draigBrady.com>
+2014-04-04  Pádraig Brady  <P@draigBrady.com>
 
 	maint: various cleanups
 	* tests/misc/numfmt.pl: Fix comment misspelling.
@@ -9673,7 +10331,7 @@
 	* NEWS: Mention the improvements.
 	The inode storage issue was mentioned by Paul Eggert.
 
-2014-04-04  Pádraig Brady  <P@draigBrady.com>
+2014-04-03  Pádraig Brady  <P@draigBrady.com>
 
 	shred: avoid a data pass on empty files
 	* src/shred.c (do_wipefd): Don't increase the size written
@@ -9695,6 +10353,8 @@
 	* src/shred.c (do_wipefd): Shred one block of empty regular files.
 	This reverts an unintended part of the previous change.
 
+2014-04-02  Paul Eggert  <eggert@cs.ucla.edu>
+
 	shred: port to GNU/Linux behavior with tape drives
 	See: http://bugs.gnu.org/17149
 	* src/shred.c [__linux__]: Include <sys/mtio.h>.
@@ -9703,8 +10363,6 @@
 	(dopass): Use it.  New arg ST, needed for dorewind.  All uses changed.
 	(do_wipefd): Don't rely on undefined behavior on integer overflow
 	of file sizes.  Use INT_ADD_OVERFLOW instead.
-
-2014-04-02  Paul Eggert  <eggert@cs.ucla.edu>
 
 	head: port to Darwin and use simpler seeks
 	This removes an unportable assumption that if lseek succeeds, the
@@ -9755,7 +10413,7 @@
 
 	Spotted by coverity: MISSING_BREAK.
 
-2014-03-25  Paul Eggert  <eggert@cs.ucla.edu>
+2014-03-24  Paul Eggert  <eggert@cs.ucla.edu>
 
 	cp: simplify overwrite logic
 	* src/copy.c (overwrite_ok): Rename from overwrite_prompt.  Invoke
@@ -9807,14 +10465,14 @@
 	* THANKS.in: Remove patch owner.
 	Fixes http://bugs.gnu.org/17041
 
-2014-03-19  Pádraig Brady  <P@draigBrady.com>
+2014-03-18  Pádraig Brady  <P@draigBrady.com>
 
 	chroot: always diagnose failure to set supplemental groups
 	* src/chroot.c (setgroups): Change this replacement to
 	fail when called so that platforms like Interix without support for
 	supplemental groups don't silently ignore a --groups option.
 
-2014-03-19  Dylan Simon  <dylan@dylex.net>
+2014-03-18  Dylan Simon  <dylan@dylex.net>
 
 	chmod: fix erroneous warnings with -R --changes
 	For files with "special" bits set, we would stat the relative
@@ -9828,7 +10486,7 @@
 	* NEWS: Mention the fix.
 	Fixes http://bugs.gnu.org/17035
 
-2014-03-19  Bernhard Voelker  <mail@bernhard-voelker.de>
+2014-03-18  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	maint: fix typo in comment in fadvise.c
 	* gl/lib/fadvise.c: s/the the/the/, indroduced in commit
@@ -9849,7 +10507,7 @@
 	* configure.ac (getattrat, LIB_NVPAIR): New checks.
 	* src/local.mk (src_stat_LDADD): Add $(LIB_NVPAIR).
 
-2014-03-14  Jim Meyering  <meyering@fb.com>
+2014-03-13  Jim Meyering  <meyering@fb.com>
 
 	ln: with -sr, don't segfault for a TARGET of ''
 	Prior to this change, "ln -sr '' F" would segfault, attempting
@@ -10006,7 +10664,7 @@
 
 	Prompted by the syntax-check rule sc_error_message_uppercase
 
-2014-02-26  Bernhard Voelker  <mail@bernhard-voelker.de>
+2014-02-25  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	doc: add dd example for failing disks
 	* doc/coreutils.texi (dd invocation): Add an example for how to call
@@ -10021,7 +10679,7 @@
 	* src/shuf.c (main): With -r, report an error if the input is empty.
 	* tests/misc/shuf.sh: Test for the bug.
 
-2014-02-21  Paul Eggert  <eggert@cs.ucla.edu>
+2014-02-20  Paul Eggert  <eggert@cs.ucla.edu>
 
 	doc: fix problems with @w and @kbd (Bug#16802)
 	* doc/coreutils.texi: Prefer '@allowcodebreaks false' to '@w'.
@@ -10085,7 +10743,7 @@
 	* doc/coreutils.texi (od invocation): Describe the new option.
 	* NEWS: Mention the new feature.
 
-2014-01-29  Pádraig Brady  <P@draigBrady.com>
+2014-01-28  Pádraig Brady  <P@draigBrady.com>
 
 	stat,tail: improve support for HFS+ and HFSX
 	* src/stat.c (human_fstype): Add new file system ID definitions.
@@ -10206,7 +10864,7 @@
 	ACL specs, and use ACL specs which can't be mapped into regular file
 	permission bits.  Document the reasons.
 
-2014-01-09  Bernhard Voelker  <mail@bernhard-voelker.de>
+2014-01-08  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	tests: avoid FP failure when cp fails for /proc/cpuinfo
 	On emulated aarch64 systems like in the qemu-based OpenBuildService
@@ -10269,7 +10927,7 @@
 	* NEWS: Mention the improvement, and adjust for the fact that
 	SNFS is a remote file system.
 
-2013-12-13  Pádraig Brady  <P@draigBrady.com>
+2013-12-12  Pádraig Brady  <P@draigBrady.com>
 
 	tests: avoid unlikely deadlock in dd/no-allocate on some shells
 	* test/dd/no-allocate.sh: Use 'wait' to ensure we don't have
@@ -10307,6 +10965,8 @@
 	determine the file system type as the exclusion filter is not
 	applied in that case.  "lofs" being ignored is effectively
 	an unknown file system type.
+
+2013-12-10  Pádraig Brady  <P@draigBrady.com>
 
 	tests: avoid warnings due to new filefrag -v format
 	* tests/cp/sparse-fiemap.sh: Newer versions of filefrag output
@@ -10435,7 +11095,7 @@
 	"... resolves to ...".
 	* NEWS (Bug fixes): Mention the new behavior also here.
 
-2013-12-05  Pádraig Brady  <P@draigBrady.com>
+2013-12-04  Pádraig Brady  <P@draigBrady.com>
 
 	tests: fix false failure with disabled SELinux support
 	This could trigger on SELinux systems where we build --qithout-selinux
@@ -10448,7 +11108,7 @@
 	(require_selinux_): Refactor a little to distinguish whether it's
 	the build or the (file) system that doesn't support SELinux.
 
-2013-12-05  Pádraig Brady  <P@draigBrady.com>
+2013-12-04  Pádraig Brady  <P@draigBrady.com>
 
 	selinux: fix --context=CTX for cp and diagnose defaultcon() errors
 	* src/selinux.h (ignorable_ctx_err): A new function used
@@ -10518,7 +11178,7 @@
 	- Avoid generating core dumps from regex configure check
 	- Fix compile error in getcwd configure check
 
-2013-12-04  Pádraig Brady  <P@draigBrady.com>
+2013-12-03  Pádraig Brady  <P@draigBrady.com>
 
 	build: update gnulib submodule to latest
 	Note tests/init.sh and bootstrap are still in sync with gnulib.
@@ -10544,7 +11204,7 @@
 	* src/numfmt.c: Fix numerous wrong quote notations to fit the above
 	new rule, mostly in internal debugging diagnostic messages.
 
-2013-12-03  Pádraig Brady  <P@draigBrady.com>
+2013-12-02  Pádraig Brady  <P@draigBrady.com>
 
 	doc: remove obsolete info on terminal alignment bugs
 	* doc/coreutils.texi (ls invocation): Remove the note about
@@ -10593,7 +11253,7 @@
 	(main): In the option parsing loop, remove the MEGABYTES_OPTION case.
 	* NEWS: Mention the change.
 
-2013-11-28  Pádraig Brady  <P@draigBrady.com>
+2013-11-27  Pádraig Brady  <P@draigBrady.com>
 
 	build: fix selinux.c build failure on 32 bit
 	* src/selinux.c: Don't include the system "fts.h" as
@@ -10719,7 +11379,7 @@
 	* src/selinux.h: Likewise.
 	* po/POTFILES.in: Reference the new module.
 
-2013-11-27  Pádraig Brady  <P@draigBrady.com>
+2013-11-26  Pádraig Brady  <P@draigBrady.com>
 
 	shred: provide --remove methods to avoid excessive syncing
 	A sync operation is very often expensive.  For illustration
@@ -10750,7 +11410,7 @@
 	* NEWS: Mention the new feature.
 	* THANKS.in: Add reporter Joseph D. Wagner
 
-2013-11-27  Pádraig Brady  <P@draigBrady.com>
+2013-11-26  Pádraig Brady  <P@draigBrady.com>
 
 	tail: improve inotify handling of symlinks
 	Previous behavior failed to read contents of a (re)appearing file,
@@ -10766,7 +11426,7 @@
 	* NEWS: Mention the fix.
 	Reported by: Ondrej Oprala
 
-2013-11-27  Pádraig Brady  <P@draigBrady.com>
+2013-11-26  Pádraig Brady  <P@draigBrady.com>
 
 	df: add --output=file to directly output specified arguments
 	* src/df.c (usage): Document the new 'file' --output field.
@@ -10801,8 +11461,6 @@
 	(open_temp): Likewise.
 	Fixes http://bugs.gnu.org/15970
 
-2013-11-26  Pádraig Brady  <P@draigBrady.com>
-
 	doc: clarify the operation of ls -k
 	* src/ls.c (usage): Mention -k only changes the display
 	for disk usage (directory total, and ls -s), and imply
@@ -10811,7 +11469,7 @@
 	handling is different to other utilities.
 	Addresses http://bugs.gnu.org/14525
 
-2013-11-23  John  <da_audiophile@yahoo.com>
+2013-11-22  John  <da_audiophile@yahoo.com>
 
 	dircolors: add a new entry to colorize 'lz4' files
 	* src/dircolors.hin: Add entry for the speed optimized 'lz4' compressor.
@@ -10848,7 +11506,7 @@
 	* doc/coreutils.texi (rm invocation): In the paragraph describing
 	the above behavior, mention that POSIX mandates it.
 
-2013-11-18  Pádraig Brady  <P@draigBrady.com>
+2013-11-17  Pádraig Brady  <P@draigBrady.com>
 
 	tests: fix false rm -I test failure when run as root
 	Fix a recent regression introduced in commit v8.21-127-g5ee7d8f
@@ -11106,7 +11764,7 @@
 	* NEWS: Mention the bug fix.
 	Fixes http://bugs.gnu.org/9308
 
-2013-09-22  Pádraig Brady  <P@draigBrady.com>
+2013-09-21  Pádraig Brady  <P@draigBrady.com>
 
 	maint: move all id(1) tests to the same directory
 	* tests/misc/id-context.sh -> tests/id/context.sh
@@ -11137,7 +11795,7 @@
 	* NEWS: Mention the new feature.
 	Addresses http://bugs.gnu.org/15421
 
-2013-09-22  Pádraig Brady  <P@draigBrady.com>
+2013-09-21  Pádraig Brady  <P@draigBrady.com>
 
 	build: update gnulib submodule to latest; also bootstrap to latest
 	Notes tests/init.sh is still in sync with gnulib.
@@ -11147,7 +11805,7 @@
 	a fix for http://bugs.gnu.org/15066
 	and preparation for http://bugs.gnu.org/15421
 
-2013-09-22  Pádraig Brady  <P@draigBrady.com>
+2013-09-21  Pádraig Brady  <P@draigBrady.com>
 
 	tests: avoid a failure when there isn't a name for all user IDs
 	* tests/misc/id-zero.sh: Don't check exit status when in -n mode.
@@ -11185,7 +11843,7 @@
 	* NEWS (New features): Mention the new option.
 	Fixes http://bugs.gnu.org/9987
 
-2013-09-12  Bernhard Voelker  <mail@bernhard-voelker.de>
+2013-09-11  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	maint: avoid patching help2man
 	Commit cde1ea0e separated the coreutils-specific patches from help2man.
@@ -11221,7 +11879,7 @@
 	'man/help2man.diff', exempt 'man/help2man'.
 	* man/dummy-man: Recognize the option --info-page=... as no-op.
 
-2013-09-12  Bernhard Voelker  <mail@bernhard-voelker.de>
+2013-09-11  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	maint: use help2man configured with --disable-nls
 	Prompted by the continuous integration build failure at:
@@ -11292,7 +11950,7 @@
 	* .x-update-copyright: Add new file and add the above new help2man
 	files as well as the COPYING file.
 
-2013-09-05  FUJIWARA Katsunori  <foozy@lares.dti.ne.jp>
+2013-09-04  FUJIWARA Katsunori  <foozy@lares.dti.ne.jp>
 
 	ls: fix possible incorrect exit status when recursing directories
 	If there is an error reading a directory that was referenced
@@ -11313,7 +11971,7 @@
 	option, to the similar in this context --no-clobber.
 	* src/sort.c: SI and IEC suffixes can now be mixed when --human-numeric.
 
-2013-08-29  Pádraig Brady  <P@draigBrady.com>
+2013-08-28  Pádraig Brady  <P@draigBrady.com>
 
 	df: fix "blocks" translation in header
 	* src/df.c (get_header): Get the translation of "blocks" here,
@@ -11345,7 +12003,7 @@
 	automatically included in the generated THANKS file.
 	Fixes http://bugs.gnu.org/15041
 
-2013-08-05  Benno Schulenberg  <bensberg@justemail.net>
+2013-08-04  Benno Schulenberg  <bensberg@justemail.net>
 
 	doc: more semicolons instead of periods in option descriptions
 	Also slightly rephrase some descriptions for extra clarity, and
@@ -11365,7 +12023,7 @@
 	* src/uniq.c (usage): Clarify the -d option.
 	Fixes http://bugs.gnu.org/14996
 
-2013-08-02  Bernhard Voelker  <mail@bernhard-voelker.de>
+2013-08-01  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	maint: update copyright year number ranges of numfmt sources
 	Run "make update-copyright".
@@ -11401,7 +12059,7 @@
 	happens to permissions of existing files when -p is not specified.
 	Fixes http://bugs.gnu.org/14972
 
-2013-07-29  Bernhard Voelker  <mail@bernhard-voelker.de>
+2013-07-28  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	tests: fix another test failure in test/du/inodes.sh
 	Prompted by the continuous integration build failure at:
@@ -11430,7 +12088,7 @@
 	rather than the simpler "test -s" because possible error reports
 	will then include the file's content for the same reason as above.
 
-2013-07-28  Pádraig Brady  <P@draigBrady.com>
+2013-07-27  Pádraig Brady  <P@draigBrady.com>
 
 	maint: avoid clang static analysis issues in csplit
 	* src/csplit.c (find_lines): Assert that load_buffer() updates the
@@ -11439,7 +12097,7 @@
 	(process_regexp): Avoid a redundant assignment of the "line" pointer.
 	(process_line_count): Likewise.  Also reduce the "line" pointer scope.
 
-2013-07-28  Pádraig Brady  <P@draigBrady.com>
+2013-07-27  Pádraig Brady  <P@draigBrady.com>
 
 	tests: fix intermittent failure in test/du/inodes.sh
 	Prompted by the continuous integration build failure at:
@@ -11497,7 +12155,7 @@
 	* src/du.c (fill_mount_table): Use free_mount_entry() instead
 	of freeing struct members manually.
 
-2013-07-22  Bernhard Voelker  <mail@bernhard-voelker.de>
+2013-07-21  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	maint: make some shell and perl scripts executable in 'tests/'
 	Some newer test scripts - partially ones from me - are not executable.
@@ -11546,7 +12204,7 @@
 	* NEWS: Mention the change in behavior.
 	Fixes http://bugs.gnu.org/14897
 
-2013-07-12  Pádraig Brady  <P@draigBrady.com>
+2013-07-11  Pádraig Brady  <P@draigBrady.com>
 
 	head: avoid redundant allocations when reading empty files
 	* src/head.c (elide_tail_lines_file): For seekable empty files,
@@ -11555,7 +12213,7 @@
 	circuit code could not be reached due to logic error.
 	Spotted by coverity.
 
-2013-07-12  Pádraig Brady  <P@draigBrady.com>
+2013-07-11  Pádraig Brady  <P@draigBrady.com>
 
 	maint: avoid a valgrind memory leak warning from pinky
 	Similarly to commit v8.21-84-g8d2da3f in src/uptime.c
@@ -11582,7 +12240,7 @@
 
 	build: update gnulib submodule to latest
 
-2013-07-11  Pádraig Brady  <P@draigBrady.com>
+2013-07-10  Pádraig Brady  <P@draigBrady.com>
 
 	build: fix a build warning on 32 bit systems in shuf.c
 	Prompted by the continuous integration build failure at:
@@ -11591,7 +12249,7 @@
 	* src/shuf.c (write_random_numbers): Convert to an int type
 	that matches the prinft format spec.
 
-2013-07-11  Assaf Gordon  <assafgordon@gmail.com>
+2013-07-10  Assaf Gordon  <assafgordon@gmail.com>
 
 	shuf: add --repetition to support repetition in output
 	main(): Process new option.  Replace input_numbers_option_used()
@@ -11613,13 +12271,13 @@
 	* test/misc/shuf.sh: Add tests for erroneous conditions
 	like multiple '-o' and '--random-source'.
 
-2013-07-11  Pádraig Brady  <P@draigBrady.com>
+2013-07-10  Pádraig Brady  <P@draigBrady.com>
 
 	maint: adjust indentation in df.c
 	* src/df.c: Adjust indentation and spacing with has
 	gotten quite out of line in a couple of places.
 
-2013-07-09  Pádraig Brady  <P@draigBrady.com>
+2013-07-08  Pádraig Brady  <P@draigBrady.com>
 
 	df: fix mount list processing with unstatable mount dirs
 	* src/df.c (filter_mount_list): Initialize devlist->dev_num correctly
@@ -11635,11 +12293,11 @@
 	* src/uptime.c (uptime): Free utmp_buf returned from read_utmp,
 	to avoid a "definitely lost" warning from valgrind.
 
-2013-07-07  Paul Eggert  <eggert@cs.ucla.edu>
+2013-07-06  Paul Eggert  <eggert@cs.ucla.edu>
 
 	build: update gnulib submodule to latest
 
-2013-07-05  Pádraig Brady  <P@draigBrady.com>
+2013-07-04  Pádraig Brady  <P@draigBrady.com>
 
 	tests: fix "shuf unreadable" test to work when run as root
 	* tests/misc/shuf.sh: Restrict the test to the significant
@@ -11721,7 +12379,7 @@
 	* NEWS: Mention the new feature.
 	* .mailmap: Merge the Author's 2 email addresses.
 
-2013-06-22  Pádraig Brady  <P@draigBrady.com>
+2013-06-21  Pádraig Brady  <P@draigBrady.com>
 
 	stdbuf: make it mandatory to specify a buffering option
 	This is consistent with the documented interface and
@@ -11734,7 +12392,7 @@
 	* tests/misc/stdbuf.sh: Ensure this constraint is enforced.
 	* NEWS: Mention the small change in behavior.
 
-2013-06-22  Pádraig Brady  <P@draigBrady.com>
+2013-06-21  Pádraig Brady  <P@draigBrady.com>
 
 	doc: clarify that truncate --size represents bytes by default
 	* src/truncate.c (usage): Mention that --size is in bytes which
@@ -11815,7 +12473,7 @@
 	'missing' file could be populated by the time tail(1)
 	gets to process it.
 
-2013-06-03  Andreas Mohr  <andi@lisas.de>
+2013-06-02  Andreas Mohr  <andi@lisas.de>
 
 	doc: mention 'UTC' in date --utc help
 	src/date.c (usage): Make -u apparent in searches for UTC.
@@ -11831,6 +12489,8 @@
 	* tests/misc/od.pl: Exercise each of the three affected code paths.
 	* NEWS (Bug fixes): Mention it.
 	Reported by Rich Burridge.
+
+2013-06-01  Jim Meyering  <meyering@fb.com>
 
 	tests: head-c: avoid spurious failure with a 32-bit size_t
 	* tests/misc/head-c.sh: Don't try to elide 1 exabytes, since on
@@ -11849,6 +12509,8 @@
 	I confirmed that this test still fails when the split.c-modifying
 	part of v8.21-58-gfec363c is backed out.
 
+2013-05-26  Jim Meyering  <meyering@fb.com>
+
 	tests: fix an ls test not to fail when user or group name contains SP
 	* tests/ls/block-size.sh (size_etc): The sed expression through which
 	we filtered the output of "ls -l ..." assumed that the user and group
@@ -11856,7 +12518,7 @@
 	problem by using -og instead of -l, thus not printing either of those
 	fields.  Adjust the sed expression accordingly.
 
-2013-05-27  Stefano Lattarini  <stefano.lattarini@gmail.com>
+2013-05-26  Stefano Lattarini  <stefano.lattarini@gmail.com>
 
 	tests: numfmt: use the printf program, not the shell builtin
 	* tests/misc/numfmt.pl: Avoid a spurious failure when
@@ -11885,7 +12547,7 @@
 	* NEWS: Mention the improvement.
 	Fixes http://bugs.gnu.org/13537
 
-2013-05-19  Paul Eggert  <eggert@cs.ucla.edu>
+2013-05-18  Paul Eggert  <eggert@cs.ucla.edu>
 
 	maint: port --enable-gcc-warnings to clang
 	* configure.ac: If clang, add -Wno-format-extra-args and
@@ -11917,12 +12579,12 @@
 	feature requests, and also link to the list of previously
 	discussed and rejected requests.
 
-2013-05-12  Jim Meyering  <meyering@fb.com>
+2013-05-11  Jim Meyering  <meyering@fb.com>
 
 	build: avoid new syntax-check failure
 	* po/POTFILES.in: Reflect renaming.
 
-2013-05-12  Paul Eggert  <eggert@cs.ucla.edu>
+2013-05-11  Paul Eggert  <eggert@cs.ucla.edu>
 
 	maint: add FIXME comment
 
@@ -12131,7 +12793,7 @@
 	and add a test to verify large amounts of mem aren't allocated.
 	Fixes http://bugs.gnu.org/13127
 
-2013-04-28  Pádraig Brady  <P@draigBrady.com>
+2013-04-27  Pádraig Brady  <P@draigBrady.com>
 
 	stat,tail: improve support for snfs
 	The StorNext distributed file system was previously known as CVFS.
@@ -12219,7 +12881,7 @@
 	Reported by Noel Morrison in:
 	http://lists.gnu.org/archive/html/coreutils/2013-04/msg00003.html
 
-2013-04-14  Pádraig Brady  <P@draigBrady.com>
+2013-04-13  Pádraig Brady  <P@draigBrady.com>
 
 	tests: avoid false failures with non default groups
 	On OS X it was seen that the group ID used for new files,
@@ -12234,7 +12896,7 @@
 	* tests/install/install-C-selinux.sh: Likewise.
 	* tests/install/install-C.sh: Likewise.
 
-2013-04-14  Pádraig Brady  <P@draigBrady.com>
+2013-04-13  Pádraig Brady  <P@draigBrady.com>
 
 	doc: mention caveats with using install --compare
 	* doc/coreutils.texi (install invocation): Mention that install(1) may
@@ -12249,7 +12911,7 @@
 	* tests/misc/head-c.sh: Add a test case.
 	Fixes http://bugs.gnu.org/13530
 
-2013-04-14  Ondrej Oprala  <ooprala@redhat.com>
+2013-04-13  Ondrej Oprala  <ooprala@redhat.com>
 
 	dd: avoid buffer allocations unless needed
 	* src/dd.c: Add new static global variable ibuf.
@@ -12292,7 +12954,7 @@
 
 	* man/local.mk: s/-w/a-w/
 
-2013-04-04  Pádraig Brady  <P@draigBrady.com>
+2013-04-03  Pádraig Brady  <P@draigBrady.com>
 
 	tests: avoid shared lib tests on unsupported platforms
 	* init.cfg (require_gcc_shared_): A new function to check
@@ -12322,7 +12984,7 @@
 	* tests/ln/relative.sh: Add a test to demonstrate full symlink
 	resolution, in a case where it might not be wanted.
 
-2013-04-04  Rémy Lefevre  <lefevreremy@gmail.com>
+2013-04-03  Rémy Lefevre  <lefevreremy@gmail.com>
 
 	ln: --relative: fix updating of existing symlinks
 	Don't dereference an existing symlink being replaced.
@@ -12354,7 +13016,7 @@
 	* tests/local.mk: Reference new test.
 	* NEWS: Mention the improvement.
 
-2013-03-24  Pádraig Brady  <P@draigBrady.com>
+2013-03-23  Pádraig Brady  <P@draigBrady.com>
 
 	stat,tail: improve support for efivarfs, exofs, f2fs and ubifs
 	* src/stat.c (human_fstype): Add new file system ID definitions.
@@ -12447,18 +13109,18 @@
 	* tests/misc/help-version.sh: Remove the check for bug-coreutils@gnu.org
 	* tests/local.mk: Remove the no longer needed PACKAGE_BUGREPORT.
 
-2013-02-28  Assaf Gordon  <assafgordon@gmail.com>
+2013-02-27  Assaf Gordon  <assafgordon@gmail.com>
 
 	tests: add '--ignore-case' tests for uniq
 	* tests/misc/uniq.pl: add tests for --ignore-case.
 
-2013-02-28  Javier López  <chilicuil@ubuntu.com>
+2013-02-27  Javier López  <chilicuil@ubuntu.com>
 
 	dircolors: add a new entry to colorize 'arc' files
 	* src/dircolors.hin: Add an entry for arc.  Suggested in:
 	https://bugs.launchpad.net/ubuntu/+source/coreutils/+bug/1088131
 
-2013-02-28  Assaf Gordon  <assafgordon@gmail.com>
+2013-02-27  Assaf Gordon  <assafgordon@gmail.com>
 
 	join: Add the -z, --zero-terminated option
 	* NEWS: Mention join's new option: --zero-terminated (-z).
@@ -12470,7 +13132,7 @@
 	* doc/coreutils.texi (join invocation): Describe the new option.
 	* tests/misc/join.pl: add tests for -z option.
 
-2013-02-28  Ondřej Vašík  <ovasik@redhat.com>
+2013-02-27  Ondřej Vašík  <ovasik@redhat.com>
 
 	dircolors: add new entries to colorized archive formats
 	* src/dircolors.hin:  Add .cab, .alz, .lzo, .lrz, .t7z, .tzo, .lha
@@ -12488,13 +13150,13 @@
 	* NEWS (Bug fixes): Mention the fix.
 	Reported by John Reiser in http://bugzilla.redhat.com/632444.
 
-2013-02-20  Joachim Schmitz  <jojo@schmitz-digital.de>
+2013-02-19  Joachim Schmitz  <jojo@schmitz-digital.de>
 
 	copy: ensure the correct root ID is checked on all platforms
 	* src/copy.c (copy_reg): Check ROOT_UID rather than 0,
 	which is significant on HP-NonStop.
 
-2013-02-20  Pádraig Brady  <P@draigBrady.com>
+2013-02-19  Pádraig Brady  <P@draigBrady.com>
 
 	maint: cleanup up various uses of __attribute__
 	* src/cfg.mk (sc_prohibit-gl-attributes): Disallow the __attribute()
@@ -12521,14 +13183,14 @@
 	* src/test.c: Likewise.
 	* src/tsort.c: Likewise.
 
-2013-02-20  Joachim Schmitz  <jojo@schmitz-digital.de>
+2013-02-19  Joachim Schmitz  <jojo@schmitz-digital.de>
 
 	build: fix numfmt build error on compilers without __attribute
 	* src/numfmt.c (): Use the more standard _GL_ATTRIBUTE_PURE
 	which is elided where required.
 	Reported in http://bugs.gnu.org/10305
 
-2013-02-20  Pádraig Brady  <P@draigBrady.com>
+2013-02-19  Pádraig Brady  <P@draigBrady.com>
 
 	tests: avoid false failures on file systems with smaller NAME_MAX
 	* tests/du/long-from-unreadable.sh: This test requires a NAME_MAX
@@ -12536,7 +13198,7 @@
 	* tests/rm/deep-2.sh: Likewise.
 	Reported by C de-Avillez with ecryptfs where NAME_MAX = 143.
 
-2013-02-18  Stefano Lattarini  <stefano.lattarini@gmail.com>
+2013-02-17  Stefano Lattarini  <stefano.lattarini@gmail.com>
 
 	maint: choose editor in the commit-msg git hook the same way git does
 	Git honours the GIT_EDITOR environment variable, the "core.editor" Git
@@ -12555,7 +13217,7 @@
 
 	* scripts/git-hooks ($editor): Adjust definition.
 
-2013-02-18  Stefano Lattarini  <stefano.lattarini@gmail.com>
+2013-02-17  Stefano Lattarini  <stefano.lattarini@gmail.com>
 
 	maint: don't reset PATH in the commit-msg git hook
 	I have a custom 'editor' script in ~/bin, and a system-provided
@@ -12595,7 +13257,7 @@
 	Also remove a redundant call to `tr` and avoid
 	explicit setting of LANG=C which is done globally.
 
-2013-02-14  Pádraig Brady  <P@draigBrady.com>
+2013-02-13  Pádraig Brady  <P@draigBrady.com>
 
 	build: avoid link failure in devmsg() on older linkers
 	On linkers that don't remove unused functions,
@@ -12669,7 +13331,7 @@
 
 	Reported by Göran Uddeborg in http://bugs.gnu.org/13665
 
-2013-02-10  Pádraig Brady  <P@draigBrady.com>
+2013-02-09  Pádraig Brady  <P@draigBrady.com>
 
 	tests: tail-2/inotify-rotate: fix a false failure on NFS
 	* tests/tail-2/inotify-rotate.sh: Avoid a subshell with bash,
@@ -12821,7 +13483,7 @@
 	(get_dev): Remove the code for skipping rootfs and duplicities.
 	* tests/df/skip-duplicates.sh: Add test cases.
 
-2013-01-26  Stephan Krempel  <krempel@par-tec.com>
+2013-01-25  Stephan Krempel  <krempel@par-tec.com>
 
 	timeout: ensure a blocked SIGALRM from the parent is unblocked
 	* src/timeout.c (unblock_signal): A new function to unblock a
@@ -12832,7 +13494,7 @@
 	* NEWS: Mention the fix.
 	Fixes: http://bugs.gnu.org/13535
 
-2013-01-26  Pádraig Brady  <P@draigBrady.com>
+2013-01-25  Pádraig Brady  <P@draigBrady.com>
 
 	seq: fix to always honor the step value
 	* src/seq.c (main): With 3 positive integer args we were
@@ -12854,7 +13516,7 @@
 	the last line if it doesn't contain a '\n'.
 	* test/misc/cut.pl: Add tests for this edge case.
 
-2013-01-26  Pádraig Brady  <P@draigBrady.com>
+2013-01-25  Pádraig Brady  <P@draigBrady.com>
 
 	cut: with -f, process each line independently
 	Previously line N+1 was inspected before line N was fully output,
@@ -12869,19 +13531,19 @@
 	* NEWS: Mention the fix.
 	Fixes bug http://bugs.gnu.org/13498
 
-2013-01-24  Paul Eggert  <eggert@cs.ucla.edu>
+2013-01-23  Paul Eggert  <eggert@cs.ucla.edu>
 
 	build: update gnulib submodule to latest
 	* bootstrap.conf (gnulib_modules): Add statat.
 	The fstatat module was split in two, and we need both halves.
 
-2013-01-24  Pádraig Brady  <P@draigBrady.com>
+2013-01-23  Pádraig Brady  <P@draigBrady.com>
 
 	doc: fix an example in the od man page
 	* man/od.x: s/-w 16/-w16/ as -w takes an optional
 	parameter and so the space is significant.
 
-2013-01-23  Bernhard Voelker  <mail@bernhard-voelker.de>
+2013-01-22  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	doc: fix order of du options in usage and texinfo manual
 	* src/du.c (usage): Bring options into alphabetical order.
@@ -12889,7 +13551,7 @@
 	Furthermore, use the @itemx macro for the long options
 	--max-depth and --threshold instead of @item.
 
-2013-01-23  Bernhard Voelker  <mail@bernhard-voelker.de>
+2013-01-22  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	maint: define usage note about mandatory args centrally
 	Each program with at least one long option which is marked as
@@ -12979,7 +13641,7 @@
 	the preceding fragment about backup methods becomes the same as
 	the ones for cp, mv, and install.  A bit easier for translators.
 
-2013-01-07  Pádraig Brady  <P@draigBrady.com>
+2013-01-06  Pádraig Brady  <P@draigBrady.com>
 
 	factor: apply a more general fix to enable correct assembly
 	In addition to the previous 64 bit guards we've placed in longlong.h
@@ -13015,7 +13677,7 @@
 	* coreutils.texi (pr invocation): remove list of ancient news
 	items; the main documentation already covers what is needed.
 
-2013-01-01  Jim Meyering  <jim@meyering.net>
+2012-12-31  Jim Meyering  <jim@meyering.net>
 
 	maint: update all copyright year number ranges
 	Run "make update-copyright", but then also run this,
@@ -13023,8 +13685,6 @@
 	to make that one script use the single most recent year number.
 
 	build: update gnulib submodule to latest
-
-2012-12-31  Jim Meyering  <jim@meyering.net>
 
 	maint: adjust NEWS entry wording
 	* NEWS: Adjust wording in a few entries.
@@ -13161,12 +13821,10 @@
 	* NEWS: Mention the improvement.
 	* THANKS.in: Suggested by Aaron Davies.
 
-2012-12-15  Assaf Gordon  <assafgordon@gmail.com>
+2012-12-14  Assaf Gordon  <assafgordon@gmail.com>
 
 	maint: update gitignore entries
 	* .gitignore: ignore GCC coverage data files.
-
-2012-12-14  Assaf Gordon  <assafgordon@gmail.com>
 
 	doc: mention "git stash" in HACKING
 	* HACKING: In the paragraph about switching branches, mention
@@ -13416,12 +14074,10 @@
 	* doc/coreutils.texi (df invocation): Likewise.  Additionally,
 	explicitly mention the default order of the --output option.
 
-2012-11-21  Paul Eggert  <eggert@cs.ucla.edu>
+2012-11-20  Paul Eggert  <eggert@cs.ucla.edu>
 
 	install: fix security race
 	* NEWS: Document this.
-
-2012-11-20  Paul Eggert  <eggert@cs.ucla.edu>
 
 	install: fix security race
 	* src/copy.c (copy_internal): Use DST_MODE_BITS, not SRC_MODE.
@@ -13491,6 +14147,8 @@
 	doc: explain why dd is called "dd"
 	* doc/coreutils.texi (dd invocation): Mention JCL.
 
+2012-11-16  Paul Eggert  <eggert@cs.ucla.edu>
+
 	factor: tidy up primes.h again
 	See Stefano Lattarini in <http://bugs.gnu.org/12899>.
 	* src/local.mk (BUILT_SOURCES): Put $(top_srcdir)/src/primes.h here
@@ -13502,13 +14160,13 @@
 	* .gitignore: Add src/primes.h back, since it's no longer
 	in the repository.
 
-2012-11-13  Jim Meyering  <jim@meyering.net>
+2012-11-12  Jim Meyering  <jim@meyering.net>
 
 	maint: avoid unnecessary #include to fix syntax-check failure
 	* src/factor.c: Remove unneeded #inclusion of"verify.h".
 	It's already included via system.h.
 
-2012-11-13  Paul Eggert  <eggert@cs.ucla.edu>
+2012-11-12  Paul Eggert  <eggert@cs.ucla.edu>
 
 	factor: improve primes.h change
 	This follows suggestions by Jim Meyering in
@@ -13518,8 +14176,6 @@
 	* src/primes.h: Remove from git.  This can be generated by a
 	maintainer.  It's nicer to do so on a host with at least 128-bit
 	arithmetic.
-
-2012-11-12  Paul Eggert  <eggert@cs.ucla.edu>
 
 	factor: maintainer builds primes.h, not builder
 	With this change, the maintainer builds primes.h and it is part of
@@ -13806,7 +14462,7 @@
 	* .gitignore: Adapt the entry for the files generated during
 	the factor tests (see v8.20-9-g1cace4a).
 
-2012-11-04  Ángel González  <keisial@gmail.com>
+2012-11-03  Ángel González  <keisial@gmail.com>
 
 	timeout: add --preserve-status to always propagate the exit status
 	It's useful for commands that support running for an indeterminite
@@ -13821,7 +14477,7 @@
 	(main): Don't return EXIT_TIMEOUT of preserve_status is set.
 	* tests/misc/timeout.sh: Add a test for the new option.
 
-2012-11-04  Pádraig Brady  <P@draigBrady.com>
+2012-11-03  Pádraig Brady  <P@draigBrady.com>
 
 	maint: fix the error message from sc_check-I18N-AUTHORS
 	* cfk.mk (sc_check-I18N-AUTHORS): Fix the quoting so
@@ -13836,7 +14492,7 @@
 	GCC CPU options.
 	Reported by John David Anglin
 
-2012-11-04  Pádraig Brady  <P@draigBrady.com>
+2012-11-03  Pádraig Brady  <P@draigBrady.com>
 
 	build: don't assume uintmax_t is 64 bits
 	This was not seen to be an issue in practise,
@@ -13847,7 +14503,7 @@
 	* src/make-prime-list.c (output_primes): Define format width
 	based on integer limits.
 
-2012-11-04  Pádraig Brady  <P@draigBrady.com>
+2012-11-03  Pádraig Brady  <P@draigBrady.com>
 
 	build: don't rely on support for '%j' printf format
 	* src/factor.c (print_uintmaxes): Replace with PRIuMAX.
