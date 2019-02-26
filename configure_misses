@@ -82,7 +82,6 @@ Configure miss: whether localtime loops forever near extrema
 Configure miss: timezone_t
 Configure miss: whether tzset clobbers localtime buffer
 Configure miss: whether use of struct winsize requires sys/ptem.h
-Configure miss: a turkish Unicode locale
 Configure miss: ioctl with POSIX signature
 Configure miss: whether pthread_sigmask is only a macro
 Configure miss: struct stat.st_author

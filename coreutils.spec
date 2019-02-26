@@ -6,17 +6,18 @@
 #
 Name     : coreutils
 Version  : 8.30
-Release  : 48
+Release  : 49
 URL      : https://mirrors.kernel.org/gnu/coreutils/coreutils-8.30.tar.xz
 Source0  : https://mirrors.kernel.org/gnu/coreutils/coreutils-8.30.tar.xz
 Source99 : https://mirrors.kernel.org/gnu/coreutils/coreutils-8.30.tar.xz.sig
 Summary  : No detailed summary available
 Group    : Development/Tools
 License  : GPL-3.0 GPL-3.0+
-Requires: coreutils-bin
-Requires: coreutils-license
-Requires: coreutils-locales
-Requires: coreutils-man
+Requires: coreutils-bin = %{version}-%{release}
+Requires: coreutils-libexec = %{version}-%{release}
+Requires: coreutils-license = %{version}-%{release}
+Requires: coreutils-locales = %{version}-%{release}
+Requires: coreutils-man = %{version}-%{release}
 BuildRequires : acl-dev
 BuildRequires : attr-dev
 BuildRequires : automake
@@ -41,8 +42,8 @@ the GNU fileutils, sh-utils, and textutils packages.
 %package bin
 Summary: bin components for the coreutils package.
 Group: Binaries
-Requires: coreutils-license
-Requires: coreutils-man
+Requires: coreutils-libexec = %{version}-%{release}
+Requires: coreutils-license = %{version}-%{release}
 
 %description bin
 bin components for the coreutils package.
@@ -51,10 +52,19 @@ bin components for the coreutils package.
 %package doc
 Summary: doc components for the coreutils package.
 Group: Documentation
-Requires: coreutils-man
+Requires: coreutils-man = %{version}-%{release}
 
 %description doc
 doc components for the coreutils package.
+
+
+%package libexec
+Summary: libexec components for the coreutils package.
+Group: Default
+Requires: coreutils-license = %{version}-%{release}
+
+%description libexec
+libexec components for the coreutils package.
 
 
 %package license
@@ -92,7 +102,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1534525665
+export SOURCE_DATE_EPOCH=1551152907
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
@@ -111,10 +121,10 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check
 
 %install
-export SOURCE_DATE_EPOCH=1534525665
+export SOURCE_DATE_EPOCH=1551152907
 rm -rf %{buildroot}
-mkdir -p %{buildroot}/usr/share/doc/coreutils
-cp COPYING %{buildroot}/usr/share/doc/coreutils/COPYING
+mkdir -p %{buildroot}/usr/share/package-licenses/coreutils
+cp COPYING %{buildroot}/usr/share/package-licenses/coreutils/COPYING
 %make_install
 %find_lang coreutils
 
@@ -227,18 +237,21 @@ cp COPYING %{buildroot}/usr/share/doc/coreutils/COPYING
 /usr/bin/who
 /usr/bin/whoami
 /usr/bin/yes
-/usr/libexec/coreutils/libstdbuf.so
 
 %files doc
 %defattr(0644,root,root,0755)
 %doc /usr/share/info/*
 
-%files license
+%files libexec
 %defattr(-,root,root,-)
-/usr/share/doc/coreutils/COPYING
+/usr/libexec/coreutils/libstdbuf.so
+
+%files license
+%defattr(0644,root,root,0755)
+/usr/share/package-licenses/coreutils/COPYING
 
 %files man
-%defattr(-,root,root,-)
+%defattr(0644,root,root,0755)
 /usr/share/man/man1/b2sum.1
 /usr/share/man/man1/base32.1
 /usr/share/man/man1/base64.1
