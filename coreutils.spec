@@ -5,11 +5,11 @@
 # Source0 file verified with key 0xDF6FD971306037D9 (P@draigBrady.com)
 #
 Name     : coreutils
-Version  : 8.30
-Release  : 49
-URL      : https://mirrors.kernel.org/gnu/coreutils/coreutils-8.30.tar.xz
-Source0  : https://mirrors.kernel.org/gnu/coreutils/coreutils-8.30.tar.xz
-Source99 : https://mirrors.kernel.org/gnu/coreutils/coreutils-8.30.tar.xz.sig
+Version  : 8.31
+Release  : 50
+URL      : https://mirrors.kernel.org/gnu/coreutils/coreutils-8.31.tar.xz
+Source0  : https://mirrors.kernel.org/gnu/coreutils/coreutils-8.31.tar.xz
+Source99 : https://mirrors.kernel.org/gnu/coreutils/coreutils-8.31.tar.xz.sig
 Summary  : No detailed summary available
 Group    : Development/Tools
 License  : GPL-3.0 GPL-3.0+
@@ -33,7 +33,6 @@ BuildRequires : pkg-config-dev
 BuildRequires : valgrind
 Patch1: 0001-df-test-Do-not-attempt-to-use-the-local-disks-during.patch
 Patch2: fix-builderror-automake1-15.patch
-Patch3: coreutils-8.30-renameatu.patch
 
 %description
 These are the GNU core utilities.  This package is the union of
@@ -92,17 +91,16 @@ man components for the coreutils package.
 
 
 %prep
-%setup -q -n coreutils-8.30
+%setup -q -n coreutils-8.31
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1551152907
+export SOURCE_DATE_EPOCH=1552316313
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
@@ -121,7 +119,7 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check
 
 %install
-export SOURCE_DATE_EPOCH=1551152907
+export SOURCE_DATE_EPOCH=1552316313
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/coreutils
 cp COPYING %{buildroot}/usr/share/package-licenses/coreutils/COPYING
@@ -138,6 +136,7 @@ cp COPYING %{buildroot}/usr/share/package-licenses/coreutils/COPYING
 /usr/bin/base32
 /usr/bin/base64
 /usr/bin/basename
+/usr/bin/basenc
 /usr/bin/cat
 /usr/bin/chcon
 /usr/bin/chgrp
@@ -256,6 +255,7 @@ cp COPYING %{buildroot}/usr/share/package-licenses/coreutils/COPYING
 /usr/share/man/man1/base32.1
 /usr/share/man/man1/base64.1
 /usr/share/man/man1/basename.1
+/usr/share/man/man1/basenc.1
 /usr/share/man/man1/cat.1
 /usr/share/man/man1/chcon.1
 /usr/share/man/man1/chgrp.1

@@ -21,11 +21,15 @@ Configure miss: st_dm_mode in struct stat
 Configure miss: whether strmode is declared
 Configure miss: whether fflush works on input streams
 Configure miss: arithmetic hrtime_t
+Configure miss: 32-bit host C ABI
 Configure miss: desired default level of POSIX conformance
 Configure miss: library containing setfilecon
 Configure miss: strerror_r with POSIX signature
 Configure miss: whether printf supports the 'n' directive
 Configure miss: whether use of TIOCGWINSZ requires termios.h
+Configure miss: fake locale system (OpenBSD)
+Configure miss: Solaris 11.4 locale system
+Configure miss: CFLocaleCopyPreferredLanguages
 Configure miss: acl_delete_fd_np
 Configure miss: acl_delete_file_np
 Configure miss: acl_copy_ext_native
@@ -36,9 +40,6 @@ Configure miss: ACL_TYPE_EXTENDED
 Configure miss: whether fpurge is declared
 Configure miss: _fseeki64
 Configure miss: whether to use statvfs64
-Configure miss: dustat.h usability
-Configure miss: dustat.h presence
-Configure miss: dustat.h
 Configure miss: sys/fs/s5param.h usability
 Configure miss: sys/fs/s5param.h presence
 Configure miss: sys/fs/s5param.h
@@ -54,7 +55,6 @@ Configure miss: whether mbswidth is declared in <wchar.h>
 Configure miss: __mktime_internal
 Configure miss: listmntent
 Configure miss: struct fsstat.f_fstypename
-Configure miss: listmntent of Cray/Unicos-9
 Configure miss: mntctl function and struct vmount
 Configure miss: sys/mntent.h usability
 Configure miss: sys/mntent.h presence
@@ -73,6 +73,7 @@ Configure miss: struct utmpx.ut_exit.ut_exit
 Configure miss: struct utmp.ut_exit.ut_exit
 Configure miss: struct utmpx.ut_exit.ut_termination
 Configure miss: struct utmp.ut_exit.ut_termination
+Configure miss: working re_compile_pattern
 Configure miss: selinux/flask.h usability
 Configure miss: selinux/flask.h presence
 Configure miss: selinux/flask.h

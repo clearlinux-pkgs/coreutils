@@ -1,5 +1,113 @@
 GNU coreutils NEWS                                    -*- outline -*-
 
+* Noteworthy changes in release 8.31 (2019-03-10) [stable]
+
+** Bug fixes
+
+  'base64 a b' now correctly diagnoses 'b' as the extra operand, not 'a'.
+  [bug introduced in coreutils-5.3.0]
+
+  When B already exists, 'cp -il A B' no longer immediately fails
+  after asking the user whether to proceed.
+  [This bug was present in "the beginning".]
+
+  df no longer corrupts displayed multibyte characters on macOS.
+  [bug introduced with coreutils-8.18]
+
+  seq no longer outputs inconsistent decimal point characters
+  for the last number, when locales are misconfigured.
+  [bug introduced in coreutils-7.0]
+
+  shred, sort, and split no longer falsely report ftruncate errors
+  when outputting to less-common file types.  For example, the shell
+  command 'sort /dev/null -o /dev/stdout | cat' no longer fails with
+  an "error truncating" diagnostic.
+  [bug was introduced with coreutils-8.18 for sort and split, and
+   (for shared memory objects only) with fileutils-4.1 for shred]
+
+  sync no longer fails for write-only file arguments.
+  [bug introduced with argument support to sync in coreutils-8.24]
+
+  'tail -f file | filter' no longer exits immediately on AIX.
+  [bug introduced in coreutils-8.28]
+
+  'tail -f file | filter' no longer goes into an infinite loop
+  if filter exits and SIGPIPE is ignored.
+  [bug introduced in coreutils-8.28]
+
+** Changes in behavior
+
+  cksum, dd, hostid, hostname, link, logname, sleep, tsort, unlink,
+  uptime, users, whoami, yes: now always process --help and --version options,
+  regardless of any other arguments present before any optional '--'
+  end-of-options marker.
+
+  nohup now processes --help and --version as first options even if other
+  parameters follow.
+
+  'yes a -- b' now outputs 'a b' instead of including the end-of-options
+  marker as before: 'a -- b'.
+
+  echo now always processes backslash escapes when the POSIXLY_CORRECT
+  environment variable is set.
+
+  When possible 'ln A B' now merely links A to B and reports an error
+  if this fails, instead of statting A and B before linking.  This
+  uses fewer system calls and avoids some races.  The old statting
+  approach is still used in situations where hard links to directories
+  are allowed (e.g., NetBSD when superuser).
+
+  ls --group-directories-first will also group symlinks to directories.
+
+  'test -a FILE' is not supported anymore.  Long ago, there were concerns about
+  the high probability of humans confusing the -a primary with the -a binary
+  operator, so POSIX changed this to 'test -e FILE'.  Scripts using it were
+  already broken and non-portable; the -a unary operator was never documented.
+
+  wc now treats non breaking space characters as word delimiters
+  unless the POSIXLY_CORRECT environment variable is set.
+
+** New features
+
+  id now supports specifying multiple users.
+
+  'date' now supports the '+' conversion specification flag,
+  introduced in POSIX.1-2017.
+
+  printf, seq, sleep, tail, and timeout now accept floating point
+  numbers in either the current or the C locale.  For example, if the
+  current locale's decimal point is ',', 'sleep 0,1' and 'sleep 0.1'
+  now mean the same thing.  Previously, these commands accepted only
+  C-locale syntax with '.' as the decimal point.  The new behavior is
+  more compatible with other implementations in non-C locales.
+
+  test now supports the '-N FILE' unary operator (like e.g. bash) to check
+  whether FILE exists and has been modified since it was last read.
+
+  env now supports '--default-signal[=SIG]', '--ignore-signal[=SIG]', and
+  '--block-signal[=SIG], to setup signal handling before executing a program.
+
+  env now supports '--list-signal-handling' to indicate non-default
+  signal handling before executing a program.
+
+** New commands
+
+  basenc is added to complement existing base64,base32 commands,
+  and encodes and decodes printable text using various common encodings:
+  base64,base64url,base32,base32hex,base16,base2,z85.
+
+** Improvements
+
+  ls -l now better aligns abbreviated months containing digits,
+  which is common in Asian locales.
+
+  stat and tail now know about the "sdcardfs" file system on Android.
+  stat -f -c%T now reports the file system type, and tail -f uses inotify.
+
+  stat now prints file creation time when supported by the file system,
+  on GNU Linux systems with glibc >= 2.28 and kernel >= 4.11.
+
+
 * Noteworthy changes in release 8.30 (2018-07-01) [stable]
 
 ** Bug fixes
@@ -4934,7 +5042,7 @@ packages, see ./old/*/NEWS.
 
 ========================================================================
 
-Copyright (C) 2001-2018 Free Software Foundation, Inc.
+Copyright (C) 2001-2019 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
