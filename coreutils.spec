@@ -6,7 +6,7 @@
 #
 Name     : coreutils
 Version  : 8.31
-Release  : 50
+Release  : 51
 URL      : https://mirrors.kernel.org/gnu/coreutils/coreutils-8.31.tar.xz
 Source0  : https://mirrors.kernel.org/gnu/coreutils/coreutils-8.31.tar.xz
 Source99 : https://mirrors.kernel.org/gnu/coreutils/coreutils-8.31.tar.xz.sig
