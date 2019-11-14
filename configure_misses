@@ -16,6 +16,7 @@ Configure miss: crtdefs.h
 Configure miss: priv.h
 Configure miss: selinux/selinux.h
 Configure miss: hurd.h
+Configure miss: stropts.h
 Configure miss: OS.h
 Configure miss: st_dm_mode in struct stat
 Configure miss: whether strmode is declared

@@ -6,14 +6,15 @@
 #
 Name     : coreutils
 Version  : 8.31
-Release  : 51
+Release  : 52
 URL      : https://mirrors.kernel.org/gnu/coreutils/coreutils-8.31.tar.xz
 Source0  : https://mirrors.kernel.org/gnu/coreutils/coreutils-8.31.tar.xz
-Source99 : https://mirrors.kernel.org/gnu/coreutils/coreutils-8.31.tar.xz.sig
+Source1 : https://mirrors.kernel.org/gnu/coreutils/coreutils-8.31.tar.xz.sig
 Summary  : No detailed summary available
 Group    : Development/Tools
 License  : GPL-3.0 GPL-3.0+
 Requires: coreutils-bin = %{version}-%{release}
+Requires: coreutils-info = %{version}-%{release}
 Requires: coreutils-libexec = %{version}-%{release}
 Requires: coreutils-license = %{version}-%{release}
 Requires: coreutils-locales = %{version}-%{release}
@@ -48,13 +49,12 @@ Requires: coreutils-license = %{version}-%{release}
 bin components for the coreutils package.
 
 
-%package doc
-Summary: doc components for the coreutils package.
-Group: Documentation
-Requires: coreutils-man = %{version}-%{release}
+%package info
+Summary: info components for the coreutils package.
+Group: Default
 
-%description doc
-doc components for the coreutils package.
+%description info
+info components for the coreutils package.
 
 
 %package libexec
@@ -92,6 +92,7 @@ man components for the coreutils package.
 
 %prep
 %setup -q -n coreutils-8.31
+cd %{_builddir}/coreutils-8.31
 %patch1 -p1
 %patch2 -p1
 
@@ -99,8 +100,9 @@ man components for the coreutils package.
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
-export LANG=C
-export SOURCE_DATE_EPOCH=1552316313
+export LANG=C.UTF-8
+export SOURCE_DATE_EPOCH=1573771553
+export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
@@ -112,17 +114,17 @@ export CXXFLAGS="$CXXFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-
 make  %{?_smp_mflags}
 
 %check
-export LANG=C
+export LANG=C.UTF-8
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check
 
 %install
-export SOURCE_DATE_EPOCH=1552316313
+export SOURCE_DATE_EPOCH=1573771553
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/coreutils
-cp COPYING %{buildroot}/usr/share/package-licenses/coreutils/COPYING
+cp %{_builddir}/coreutils-8.31/COPYING %{buildroot}/usr/share/package-licenses/coreutils/8624bcdae55baeef00cd11d5dfcfa60f68710a02
 %make_install
 %find_lang coreutils
 
@@ -237,9 +239,9 @@ cp COPYING %{buildroot}/usr/share/package-licenses/coreutils/COPYING
 /usr/bin/whoami
 /usr/bin/yes
 
-%files doc
+%files info
 %defattr(0644,root,root,0755)
-%doc /usr/share/info/*
+/usr/share/info/coreutils.info
 
 %files libexec
 %defattr(-,root,root,-)
@@ -247,7 +249,7 @@ cp COPYING %{buildroot}/usr/share/package-licenses/coreutils/COPYING
 
 %files license
 %defattr(0644,root,root,0755)
-/usr/share/package-licenses/coreutils/COPYING
+/usr/share/package-licenses/coreutils/8624bcdae55baeef00cd11d5dfcfa60f68710a02
 
 %files man
 %defattr(0644,root,root,0755)
