@@ -1,3 +1,5 @@
+Configure miss: whether the compiler is clang
+Configure miss: compiler option needed when checking for declarations
 Configure miss: fpurge
 Configure miss: __freadahead
 Configure miss: __freadptr
@@ -7,6 +9,7 @@ Configure miss: microuptime
 Configure miss: nanouptime
 Configure miss: mbslen
 Configure miss: pthread_sigmask
+Configure miss: stime
 Configure miss: directio
 Configure miss: getgrgid_nomembers
 Configure miss: getgrnam_nomembers
@@ -23,6 +26,7 @@ Configure miss: whether strmode is declared
 Configure miss: whether fflush works on input streams
 Configure miss: arithmetic hrtime_t
 Configure miss: 32-bit host C ABI
+Configure miss: whether mbrtowc stores incomplete characters
 Configure miss: desired default level of POSIX conformance
 Configure miss: library containing setfilecon
 Configure miss: strerror_r with POSIX signature
@@ -31,6 +35,7 @@ Configure miss: whether use of TIOCGWINSZ requires termios.h
 Configure miss: fake locale system (OpenBSD)
 Configure miss: Solaris 11.4 locale system
 Configure miss: CFLocaleCopyPreferredLanguages
+Configure miss: library needed for semaphore functions
 Configure miss: acl_delete_fd_np
 Configure miss: acl_delete_file_np
 Configure miss: acl_copy_ext_native
@@ -38,6 +43,8 @@ Configure miss: acl_create_entry_np
 Configure miss: acl_to_short_text
 Configure miss: acl_free_text
 Configure miss: ACL_TYPE_EXTENDED
+Configure miss: whether openssl is GPL compatible
+Configure miss: whether fchmodat+AT_SYMLINK_NOFOLLOW works on non-symlinks
 Configure miss: whether fpurge is declared
 Configure miss: _fseeki64
 Configure miss: whether to use statvfs64
@@ -69,7 +76,7 @@ Configure miss: sys/table.h
 Configure miss: sys/systemcfg.h
 Configure miss: pstat_getstatic
 Configure miss: getppriv
-Configure miss: whether <pthread.h> pollutes the namespace
+Configure miss: whether pthread_sigmask is a macro
 Configure miss: struct utmpx.ut_exit.ut_exit
 Configure miss: struct utmp.ut_exit.ut_exit
 Configure miss: struct utmpx.ut_exit.ut_termination
@@ -85,7 +92,6 @@ Configure miss: timezone_t
 Configure miss: whether tzset clobbers localtime buffer
 Configure miss: whether use of struct winsize requires sys/ptem.h
 Configure miss: ioctl with POSIX signature
-Configure miss: whether pthread_sigmask is only a macro
 Configure miss: struct stat.st_author
 Configure miss: major_t
 Configure miss: minor_t
@@ -100,4 +106,4 @@ Configure miss: whether localtime caches TZ
 Configure miss: getattrat
 Configure miss: whether termios.h needs _XOPEN_SOURCE
 Configure miss: whether __sys_siglist is declared
-Configure miss: whether the system supports xlc include
+Configure miss: whether C compiler handles -errwarn

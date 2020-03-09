@@ -5,11 +5,11 @@
 # Source0 file verified with key 0xDF6FD971306037D9 (P@draigBrady.com)
 #
 Name     : coreutils
-Version  : 8.31
-Release  : 52
-URL      : https://mirrors.kernel.org/gnu/coreutils/coreutils-8.31.tar.xz
-Source0  : https://mirrors.kernel.org/gnu/coreutils/coreutils-8.31.tar.xz
-Source1 : https://mirrors.kernel.org/gnu/coreutils/coreutils-8.31.tar.xz.sig
+Version  : 8.32
+Release  : 53
+URL      : https://mirrors.kernel.org/gnu/coreutils/coreutils-8.32.tar.xz
+Source0  : https://mirrors.kernel.org/gnu/coreutils/coreutils-8.32.tar.xz
+Source1  : https://mirrors.kernel.org/gnu/coreutils/coreutils-8.32.tar.xz.sig
 Summary  : No detailed summary available
 Group    : Development/Tools
 License  : GPL-3.0 GPL-3.0+
@@ -21,19 +21,12 @@ Requires: coreutils-locales = %{version}-%{release}
 Requires: coreutils-man = %{version}-%{release}
 BuildRequires : acl-dev
 BuildRequires : attr-dev
-BuildRequires : automake
-BuildRequires : automake-dev
-BuildRequires : gettext-bin
+BuildRequires : bison
 BuildRequires : glibc-locale
 BuildRequires : gmp-dev
 BuildRequires : libcap-dev
-BuildRequires : libtool
-BuildRequires : libtool-dev
-BuildRequires : m4
-BuildRequires : pkg-config-dev
 BuildRequires : valgrind
 Patch1: 0001-df-test-Do-not-attempt-to-use-the-local-disks-during.patch
-Patch2: fix-builderror-automake1-15.patch
 
 %description
 These are the GNU core utilities.  This package is the union of
@@ -91,17 +84,16 @@ man components for the coreutils package.
 
 
 %prep
-%setup -q -n coreutils-8.31
-cd %{_builddir}/coreutils-8.31
+%setup -q -n coreutils-8.32
+cd %{_builddir}/coreutils-8.32
 %patch1 -p1
-%patch2 -p1
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1573771553
+export SOURCE_DATE_EPOCH=1583792147
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -110,7 +102,7 @@ export CFLAGS="$CFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sect
 export FCFLAGS="$CFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition -fstack-protector-strong -mzero-caller-saved-regs=used "
 export FFLAGS="$CFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition -fstack-protector-strong -mzero-caller-saved-regs=used "
 export CXXFLAGS="$CXXFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=4 -fno-semantic-interposition -fstack-protector-strong -mzero-caller-saved-regs=used "
-%reconfigure --disable-static --enable-no-install-program=kill,groups --enable-single-binary=symlinks --enable-single-binary-exceptions=expr,factor,rm
+%configure --disable-static --enable-no-install-program=kill,groups --enable-single-binary=symlinks --enable-single-binary-exceptions=expr,factor,rm
 make  %{?_smp_mflags}
 
 %check
@@ -121,10 +113,10 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check
 
 %install
-export SOURCE_DATE_EPOCH=1573771553
+export SOURCE_DATE_EPOCH=1583792147
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/coreutils
-cp %{_builddir}/coreutils-8.31/COPYING %{buildroot}/usr/share/package-licenses/coreutils/8624bcdae55baeef00cd11d5dfcfa60f68710a02
+cp %{_builddir}/coreutils-8.32/COPYING %{buildroot}/usr/share/package-licenses/coreutils/31a3d460bb3c7d98845187c716a30db81c44b615
 %make_install
 %find_lang coreutils
 
@@ -249,7 +241,7 @@ cp %{_builddir}/coreutils-8.31/COPYING %{buildroot}/usr/share/package-licenses/c
 
 %files license
 %defattr(0644,root,root,0755)
-/usr/share/package-licenses/coreutils/8624bcdae55baeef00cd11d5dfcfa60f68710a02
+/usr/share/package-licenses/coreutils/31a3d460bb3c7d98845187c716a30db81c44b615
 
 %files man
 %defattr(0644,root,root,0755)
