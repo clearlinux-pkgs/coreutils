@@ -1,109 +1,109 @@
-Configure miss: whether the compiler is clang
-Configure miss: compiler option needed when checking for declarations
-Configure miss: fpurge
+Configure miss: 32-bit host C ABI
+Configure miss: ACL_TYPE_EXTENDED
+Configure miss: CFLocaleCopyPreferredLanguages
+Configure miss: OS.h
+Configure miss: Solaris 11.4 locale system
 Configure miss: __freadahead
 Configure miss: __freadptr
 Configure miss: __freadptrinc
 Configure miss: __fseterr
-Configure miss: microuptime
-Configure miss: nanouptime
-Configure miss: mbslen
-Configure miss: pthread_sigmask
-Configure miss: stime
-Configure miss: directio
-Configure miss: getgrgid_nomembers
-Configure miss: getgrnam_nomembers
-Configure miss: getgrent_nomembers
-Configure miss: sys/fs_types.h
-Configure miss: crtdefs.h
-Configure miss: priv.h
-Configure miss: selinux/selinux.h
-Configure miss: hurd.h
-Configure miss: stropts.h
-Configure miss: OS.h
-Configure miss: st_dm_mode in struct stat
-Configure miss: whether strmode is declared
-Configure miss: whether fflush works on input streams
-Configure miss: arithmetic hrtime_t
-Configure miss: 32-bit host C ABI
-Configure miss: whether mbrtowc stores incomplete characters
-Configure miss: desired default level of POSIX conformance
-Configure miss: library containing setfilecon
-Configure miss: strerror_r with POSIX signature
-Configure miss: whether printf supports the 'n' directive
-Configure miss: whether use of TIOCGWINSZ requires termios.h
-Configure miss: fake locale system (OpenBSD)
-Configure miss: Solaris 11.4 locale system
-Configure miss: CFLocaleCopyPreferredLanguages
-Configure miss: library needed for semaphore functions
-Configure miss: acl_delete_fd_np
-Configure miss: acl_delete_file_np
+Configure miss: __mktime_internal
+Configure miss: __xpg4
+Configure miss: _fseeki64
 Configure miss: acl_copy_ext_native
 Configure miss: acl_create_entry_np
-Configure miss: acl_to_short_text
+Configure miss: acl_delete_fd_np
+Configure miss: acl_delete_file_np
 Configure miss: acl_free_text
-Configure miss: ACL_TYPE_EXTENDED
-Configure miss: whether openssl is GPL compatible
-Configure miss: whether fchmodat+AT_SYMLINK_NOFOLLOW works on non-symlinks
-Configure miss: whether fpurge is declared
-Configure miss: _fseeki64
-Configure miss: whether to use statvfs64
-Configure miss: sys/fs/s5param.h usability
-Configure miss: sys/fs/s5param.h presence
-Configure miss: sys/fs/s5param.h
+Configure miss: acl_to_short_text
+Configure miss: arithmetic hrtime_t
+Configure miss: compiler option needed when checking for declarations
+Configure miss: crtdefs.h
+Configure miss: desired default level of POSIX conformance
+Configure miss: directio
+Configure miss: fake locale system (OpenBSD)
+Configure miss: fpurge
+Configure miss: getattrat
+Configure miss: getgrent_nomembers
+Configure miss: getgrgid_nomembers
+Configure miss: getgrnam_nomembers
+Configure miss: getppriv
+Configure miss: hurd.h
+Configure miss: ioctl with POSIX signature
+Configure miss: isapipe
+Configure miss: library containing setfilecon
+Configure miss: library needed for semaphore functions
+Configure miss: listmntent
+Configure miss: major_t
+Configure miss: matchpathcon_init_prefix
+Configure miss: mbslen
+Configure miss: microuptime
+Configure miss: minor_t
+Configure miss: mntctl function and struct vmount
+Configure miss: mode_to_security_class
+Configure miss: nanouptime
+Configure miss: nfs/vfs.h
+Configure miss: nfs/vfs.h presence
+Configure miss: nfs/vfs.h usability
+Configure miss: obstacks that work with any size object
+Configure miss: priv.h
+Configure miss: pstat_getstatic
+Configure miss: pthread_sigmask
+Configure miss: sched_getaffinity_np
+Configure miss: selinux/flask.h
+Configure miss: selinux/flask.h presence
+Configure miss: selinux/flask.h usability
+Configure miss: selinux/selinux.h
+Configure miss: sig2str
+Configure miss: smack_new_label_from_self in -lsmack
+Configure miss: st_dm_mode in struct stat
 Configure miss: statfs that truncates block counts
+Configure miss: stime
+Configure miss: strerror_r with POSIX signature
+Configure miss: stropts.h
+Configure miss: struct fsstat.f_fstypename
+Configure miss: struct stat.st_author
+Configure miss: struct statfs.f_namemax
+Configure miss: struct statvfs.f_type
+Configure miss: struct utmp.ut_exit.ut_exit
+Configure miss: struct utmp.ut_exit.ut_termination
+Configure miss: struct utmpx.ut_exit.ut_exit
+Configure miss: struct utmpx.ut_exit.ut_termination
+Configure miss: sys/fs/s5param.h
+Configure miss: sys/fs/s5param.h presence
+Configure miss: sys/fs/s5param.h usability
+Configure miss: sys/fs_types.h
+Configure miss: sys/mntent.h
+Configure miss: sys/mntent.h presence
+Configure miss: sys/mntent.h usability
+Configure miss: sys/sysmp.h
+Configure miss: sys/systemcfg.h
+Configure miss: sys/table.h
+Configure miss: sysmp
+Configure miss: timezone_t
+Configure miss: whether C compiler handles -errwarn
+Configure miss: whether __sys_siglist is declared
+Configure miss: whether fchmodat+AT_SYMLINK_NOFOLLOW works on non-symlinks
+Configure miss: whether fflush works on input streams
+Configure miss: whether fpurge is declared
 Configure miss: whether gai_strerrorA is declared
 Configure miss: whether getcwd aborts when 4k < cwd_length < 16k
 Configure miss: whether gethrtime is declared
-Configure miss: isapipe
-Configure miss: __xpg4
 Configure miss: whether link(2) dereferences a symlink
-Configure miss: whether pthread_rwlock_rdlock prefers a writer to a reader
-Configure miss: whether mbswidth is declared in <wchar.h>
-Configure miss: __mktime_internal
-Configure miss: listmntent
-Configure miss: struct fsstat.f_fstypename
-Configure miss: mntctl function and struct vmount
-Configure miss: sys/mntent.h usability
-Configure miss: sys/mntent.h presence
-Configure miss: sys/mntent.h
-Configure miss: working nanosleep
-Configure miss: sys/sysmp.h
-Configure miss: sched_getaffinity_np
-Configure miss: sysmp
-Configure miss: obstacks that work with any size object
-Configure miss: sys/table.h
-Configure miss: sys/systemcfg.h
-Configure miss: pstat_getstatic
-Configure miss: getppriv
-Configure miss: whether pthread_sigmask is a macro
-Configure miss: struct utmpx.ut_exit.ut_exit
-Configure miss: struct utmp.ut_exit.ut_exit
-Configure miss: struct utmpx.ut_exit.ut_termination
-Configure miss: struct utmp.ut_exit.ut_termination
-Configure miss: working re_compile_pattern
-Configure miss: selinux/flask.h usability
-Configure miss: selinux/flask.h presence
-Configure miss: selinux/flask.h
-Configure miss: sig2str
-Configure miss: smack_new_label_from_self in -lsmack
-Configure miss: whether localtime loops forever near extrema
-Configure miss: timezone_t
-Configure miss: whether tzset clobbers localtime buffer
-Configure miss: whether use of struct winsize requires sys/ptem.h
-Configure miss: ioctl with POSIX signature
-Configure miss: struct stat.st_author
-Configure miss: major_t
-Configure miss: minor_t
-Configure miss: mode_to_security_class
-Configure miss: matchpathcon_init_prefix
-Configure miss: nfs/vfs.h usability
-Configure miss: nfs/vfs.h presence
-Configure miss: nfs/vfs.h
-Configure miss: struct statvfs.f_type
-Configure miss: struct statfs.f_namemax
 Configure miss: whether localtime caches TZ
-Configure miss: getattrat
+Configure miss: whether localtime loops forever near extrema
+Configure miss: whether mbrtowc stores incomplete characters
+Configure miss: whether mbswidth is declared in <wchar.h>
+Configure miss: whether openssl is GPL compatible
+Configure miss: whether printf supports the 'n' directive
+Configure miss: whether pthread_rwlock_rdlock prefers a writer to a reader
+Configure miss: whether pthread_sigmask is a macro
+Configure miss: whether strmode is declared
 Configure miss: whether termios.h needs _XOPEN_SOURCE
-Configure miss: whether __sys_siglist is declared
-Configure miss: whether C compiler handles -errwarn
+Configure miss: whether the compiler is clang
+Configure miss: whether to use statvfs64
+Configure miss: whether tzset clobbers localtime buffer
+Configure miss: whether use of TIOCGWINSZ requires termios.h
+Configure miss: whether use of struct winsize requires sys/ptem.h
+Configure miss: working nanosleep
+Configure miss: working re_compile_pattern
