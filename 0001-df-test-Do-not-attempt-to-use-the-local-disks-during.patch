@@ -12,7 +12,7 @@ Signed-off-by: Patrick McCarty <patrick.mccarty@intel.com>
  2 files changed, 5 insertions(+)
 
 diff --git a/tests/df/df-symlink.sh b/tests/df/df-symlink.sh
-index a1d59a8..b09ee01 100755
+index a2b8125..306fc18 100755
 --- a/tests/df/df-symlink.sh
 +++ b/tests/df/df-symlink.sh
 @@ -17,6 +17,9 @@
@@ -24,9 +24,9 @@ index a1d59a8..b09ee01 100755
 +
  print_ver_ df
  
- disk=$(df --out=source '.' | tail -n1) ||
+ file_system=$(df --out=source '.' | tail -n1) ||
 diff --git a/tests/df/skip-duplicates.sh b/tests/df/skip-duplicates.sh
-index 8730948..562cca5 100755
+index bef55ec..56b3b6c 100755
 --- a/tests/df/skip-duplicates.sh
 +++ b/tests/df/skip-duplicates.sh
 @@ -21,6 +21,8 @@
