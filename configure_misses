@@ -101,4 +101,3 @@ Configure miss: whether to use statvfs64
 Configure miss: whether use of TIOCGWINSZ requires termios.h
 Configure miss: whether use of struct winsize requires sys/ptem.h
 Configure miss: working nanosleep
-Configure miss: working re_compile_pattern

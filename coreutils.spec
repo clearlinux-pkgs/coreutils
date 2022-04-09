@@ -6,7 +6,7 @@
 #
 Name     : coreutils
 Version  : 9.0
-Release  : 58
+Release  : 59
 URL      : https://mirrors.kernel.org/gnu/coreutils/coreutils-9.0.tar.xz
 Source0  : https://mirrors.kernel.org/gnu/coreutils/coreutils-9.0.tar.xz
 Source1  : https://mirrors.kernel.org/gnu/coreutils/coreutils-9.0.tar.xz.sig
@@ -27,7 +27,7 @@ BuildRequires : gmp-dev
 BuildRequires : libcap-dev
 BuildRequires : valgrind
 Patch1: 0001-df-test-Do-not-attempt-to-use-the-local-disks-during.patch
-Patch2: 0002-chmod-fix-exit-status-when-ignoring-symlinks.patch
+Patch2: backport-chmod-fix-exit-status-when-ignoring-symlinks.patch
 
 %description
 These are the GNU core utilities.  This package is the union of
@@ -95,7 +95,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1633847995
+export SOURCE_DATE_EPOCH=1649479942
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -115,7 +115,7 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make %{?_smp_mflags} check
 
 %install
-export SOURCE_DATE_EPOCH=1633847995
+export SOURCE_DATE_EPOCH=1649479942
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/coreutils
 cp %{_builddir}/coreutils-9.0/COPYING %{buildroot}/usr/share/package-licenses/coreutils/31a3d460bb3c7d98845187c716a30db81c44b615
