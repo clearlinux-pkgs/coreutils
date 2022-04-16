@@ -22,6 +22,7 @@ Configure miss: crtdefs.h
 Configure miss: desired default level of POSIX conformance
 Configure miss: directio
 Configure miss: fake locale system (OpenBSD)
+Configure miss: fclonefileat
 Configure miss: fpurge
 Configure miss: gcc options needed to detect all undeclared functions
 Configure miss: getattrat

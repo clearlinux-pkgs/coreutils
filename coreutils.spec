@@ -5,11 +5,11 @@
 # Source0 file verified with key 0xDF6FD971306037D9 (P@draigBrady.com)
 #
 Name     : coreutils
-Version  : 9.0
-Release  : 59
-URL      : https://mirrors.kernel.org/gnu/coreutils/coreutils-9.0.tar.xz
-Source0  : https://mirrors.kernel.org/gnu/coreutils/coreutils-9.0.tar.xz
-Source1  : https://mirrors.kernel.org/gnu/coreutils/coreutils-9.0.tar.xz.sig
+Version  : 9.1
+Release  : 60
+URL      : https://mirrors.kernel.org/gnu/coreutils/coreutils-9.1.tar.xz
+Source0  : https://mirrors.kernel.org/gnu/coreutils/coreutils-9.1.tar.xz
+Source1  : https://mirrors.kernel.org/gnu/coreutils/coreutils-9.1.tar.xz.sig
 Summary  : No detailed summary available
 Group    : Development/Tools
 License  : GPL-3.0 GPL-3.0+
@@ -27,7 +27,6 @@ BuildRequires : gmp-dev
 BuildRequires : libcap-dev
 BuildRequires : valgrind
 Patch1: 0001-df-test-Do-not-attempt-to-use-the-local-disks-during.patch
-Patch2: backport-chmod-fix-exit-status-when-ignoring-symlinks.patch
 
 %description
 These are the GNU core utilities.  This package is the union of
@@ -85,17 +84,16 @@ man components for the coreutils package.
 
 
 %prep
-%setup -q -n coreutils-9.0
-cd %{_builddir}/coreutils-9.0
+%setup -q -n coreutils-9.1
+cd %{_builddir}/coreutils-9.1
 %patch1 -p1
-%patch2 -p1
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1649479942
+export SOURCE_DATE_EPOCH=1650136831
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -115,10 +113,10 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make %{?_smp_mflags} check
 
 %install
-export SOURCE_DATE_EPOCH=1649479942
+export SOURCE_DATE_EPOCH=1650136831
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/coreutils
-cp %{_builddir}/coreutils-9.0/COPYING %{buildroot}/usr/share/package-licenses/coreutils/31a3d460bb3c7d98845187c716a30db81c44b615
+cp %{_builddir}/coreutils-9.1/COPYING %{buildroot}/usr/share/package-licenses/coreutils/31a3d460bb3c7d98845187c716a30db81c44b615
 %make_install
 %find_lang coreutils
 

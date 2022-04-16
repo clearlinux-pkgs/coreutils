@@ -1,5 +1,134 @@
 GNU coreutils NEWS                                    -*- outline -*-
 
+* Noteworthy changes in release 9.1 (2022-04-15) [stable]
+
+** Bug fixes
+
+  chmod -R no longer exits with error status when encountering symlinks.
+  All files would be processed correctly, but the exit status was incorrect.
+  [bug introduced in coreutils-9.0]
+
+  If 'cp -Z A B' checks B's status and some other process then removes B,
+  cp no longer creates B with a too-generous SELinux security context
+  before adjusting it to the correct value.
+  [bug introduced in coreutils-8.17]
+
+  'cp --preserve=ownership A B' no longer ignores the umask when creating B.
+  Also, 'cp --preserve-xattr A B' is less likely to temporarily chmod u+w B.
+  [bug introduced in coreutils-6.7]
+
+  On macOS, 'cp A B' no longer miscopies when A is in an APFS file system
+  and B is in some other file system.
+  [bug introduced in coreutils-9.0]
+
+  On macOS, fmt no longer corrupts multi-byte characters
+  by misdetecting their component bytes as spaces.
+  [This bug was present in "the beginning".]
+
+  'id xyz' now uses the name 'xyz' to determine groups, instead of xyz's uid.
+  [bug introduced in coreutils-8.22]
+
+  'ls -v' and 'sort -V' no longer mishandle corner cases like "a..a" vs "a.+"
+  or lines containing NULs.  Their behavior now matches the documentation
+  for file names like ".m4" that consist entirely of an extension,
+  and the documentation has been clarified for unusual cases.
+  [bug introduced in coreutils-7.0]
+
+  On macOS, 'mv A B' no longer fails with "Operation not supported"
+  when A and B are in the same tmpfs file system.
+  [bug introduced in coreutils-9.0]
+
+  'mv -T --backup=numbered A B/' no longer miscalculates the backup number
+  for B when A is a directory, possibly inflooping.
+  [bug introduced in coreutils-6.3]
+
+** Changes in behavior
+
+  cat now uses the copy_file_range syscall if available, when doing
+  simple copies between regular files.  This may be more efficient, by avoiding
+  user space copies, and possibly employing copy offloading or reflinking.
+
+  chown and chroot now warn about usages like "chown root.root f",
+  which have the nonstandard and long-obsolete "." separator that
+  causes problems on platforms where user names contain ".".
+  Applications should use ":" instead of ".".
+
+  cksum no longer allows abbreviated algorithm names,
+  so that forward compatibility and robustness is improved.
+
+  date +'%-N' now suppresses excess trailing digits, instead of always
+  padding them with zeros to 9 digits.  It uses clock_getres and
+  clock_gettime to infer the clock resolution.
+
+  dd conv=fsync now synchronizes output even after a write error,
+  and similarly for dd conv=fdatasync.
+
+  dd now counts bytes instead of blocks if a block count ends in "B".
+  For example, 'dd count=100KiB' now copies 100 KiB of data, not
+  102,400 blocks of data.  The flags count_bytes, skip_bytes and
+  seek_bytes are therefore obsolescent and are no longer documented,
+  though they still work.
+
+  ls no longer colors files with capabilities by default, as file-based
+  capabilties are very rarely used, and lookup increases processing per file by
+  about 30%.  It's best to use getcap [-r] to identify files with capabilities.
+
+  ls no longer tries to automount files, reverting to the behavior
+  before the statx() call was introduced in coreutils-8.32.
+
+  stat no longer tries to automount files by default, reverting to the
+  behavior before the statx() call was introduced in coreutils-8.32.
+  Only `stat --cached=never` will continue to automount files.
+
+  timeout --foreground --kill-after=... will now exit with status 137
+  if the kill signal was sent, which is consistent with the behavior
+  when the --foreground option is not specified.  This allows users to
+  distinguish if the command was more forcefully terminated.
+
+** New Features
+
+  dd now supports the aliases iseek=N for skip=N, and oseek=N for seek=N,
+  like FreeBSD and other operating systems.
+
+  dircolors takes a new --print-ls-colors option to display LS_COLORS
+  entries, on separate lines, colored according to the entry color code.
+
+  dircolors will now also match COLORTERM in addition to TERM environment
+  variables.  The default config will apply colors with any COLORTERM set.
+
+** Improvements
+
+  cp, mv, and install now use openat-like syscalls when copying to a directory.
+  This avoids some race conditions and should be more efficient.
+
+  On macOS, cp creates a copy-on-write clone if source and destination
+  are regular files on the same APFS file system, the destination does
+  not already exist, and cp is preserving mode and timestamps (e.g.,
+  'cp -p', 'cp -a').
+
+  The new 'date' option --resolution outputs the timestamp resolution.
+
+  With conv=fdatasync or conv=fsync, dd status=progress now reports
+  any extra final progress just before synchronizing output data,
+  since synchronizing can take a long time.
+
+  printf now supports printing the numeric value of multi-byte characters.
+
+  sort --debug now diagnoses issues with --field-separator characters
+  that conflict with characters possibly used in numbers.
+
+  'tail -f file | filter' now exits on Solaris when filter exits.
+
+  root invoked coreutils, that are built and run in single binary mode,
+  now adjust /proc/$pid/cmdline to be more specific to the utility
+  being run, rather than using the general "coreutils" binary name.
+
+** Build-related
+
+  AIX builds no longer fail because some library functions are not found.
+  [bug introduced in coreutils-8.32]
+
+
 * Noteworthy changes in release 9.0 (2021-09-24) [stable]
 
 ** Bug fixes
@@ -3016,7 +3145,7 @@ GNU coreutils NEWS                                    -*- outline -*-
   install accepts a new option --strip-program to specify the program used to
   strip binaries.
 
-  ls now colorizes files with capabilities if libcap is available
+  ls now colors names of files with capabilities if libcap is available.
 
   ls -v now uses filevercmp function as sort predicate (instead of strverscmp)
 
@@ -5289,7 +5418,7 @@ packages, see ./old/*/NEWS.
 
 ========================================================================
 
-Copyright (C) 2001-2021 Free Software Foundation, Inc.
+Copyright (C) 2001-2022 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
