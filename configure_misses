@@ -7,7 +7,6 @@ Configure miss: __freadahead
 Configure miss: __freadptr
 Configure miss: __freadptrinc
 Configure miss: __fseterr
-Configure miss: __mktime_internal
 Configure miss: __xpg4
 Configure miss: _fseeki64
 Configure miss: acl_copy_ext_native
@@ -17,6 +16,7 @@ Configure miss: acl_delete_file_np
 Configure miss: acl_free_text
 Configure miss: acl_to_short_text
 Configure miss: arithmetic hrtime_t
+Configure miss: cap_get_file in -lcap
 Configure miss: compiler option needed when checking for declarations
 Configure miss: crtdefs.h
 Configure miss: desired default level of POSIX conformance
@@ -33,6 +33,7 @@ Configure miss: getppriv
 Configure miss: hurd.h
 Configure miss: ioctl with POSIX signature
 Configure miss: isapipe
+Configure miss: libgmp
 Configure miss: library containing setfilecon
 Configure miss: library needed for semaphore functions
 Configure miss: listmntent
@@ -98,6 +99,7 @@ Configure miss: whether termios.h needs _XOPEN_SOURCE
 Configure miss: whether the compiler is clang
 Configure miss: whether the compiler produces multi-arch binaries
 Configure miss: whether this system supports file names of any length
+Configure miss: whether this system supports stdbuf
 Configure miss: whether to use statvfs64
 Configure miss: whether use of TIOCGWINSZ requires termios.h
 Configure miss: whether use of struct winsize requires sys/ptem.h

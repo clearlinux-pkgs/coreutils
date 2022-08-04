@@ -2,6 +2,9 @@
 # picked up automatically. One name per line, no whitespace.
 acl-dev
 attr-dev
+acl-staticdev
+attr-staticdev
 gmp-dev
 libcap-dev
 valgrind
+glibc-staticdev

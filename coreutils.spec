@@ -6,7 +6,7 @@
 #
 Name     : coreutils
 Version  : 9.1
-Release  : 60
+Release  : 61
 URL      : https://mirrors.kernel.org/gnu/coreutils/coreutils-9.1.tar.xz
 Source0  : https://mirrors.kernel.org/gnu/coreutils/coreutils-9.1.tar.xz
 Source1  : https://mirrors.kernel.org/gnu/coreutils/coreutils-9.1.tar.xz.sig
@@ -15,14 +15,16 @@ Group    : Development/Tools
 License  : GPL-3.0 GPL-3.0+
 Requires: coreutils-bin = %{version}-%{release}
 Requires: coreutils-info = %{version}-%{release}
-Requires: coreutils-libexec = %{version}-%{release}
 Requires: coreutils-license = %{version}-%{release}
 Requires: coreutils-locales = %{version}-%{release}
 Requires: coreutils-man = %{version}-%{release}
 BuildRequires : acl-dev
+BuildRequires : acl-staticdev
 BuildRequires : attr-dev
+BuildRequires : attr-staticdev
 BuildRequires : bison
 BuildRequires : glibc-locale
+BuildRequires : glibc-staticdev
 BuildRequires : gmp-dev
 BuildRequires : libcap-dev
 BuildRequires : valgrind
@@ -35,7 +37,6 @@ the GNU fileutils, sh-utils, and textutils packages.
 %package bin
 Summary: bin components for the coreutils package.
 Group: Binaries
-Requires: coreutils-libexec = %{version}-%{release}
 Requires: coreutils-license = %{version}-%{release}
 
 %description bin
@@ -48,15 +49,6 @@ Group: Default
 
 %description info
 info components for the coreutils package.
-
-
-%package libexec
-Summary: libexec components for the coreutils package.
-Group: Default
-Requires: coreutils-license = %{version}-%{release}
-
-%description libexec
-libexec components for the coreutils package.
 
 
 %package license
@@ -89,11 +81,14 @@ cd %{_builddir}/coreutils-9.1
 %patch1 -p1
 
 %build
+## build_prepend content
+CFLAGS="$CFLAGS -static"
+## build_prepend end
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1650136831
+export SOURCE_DATE_EPOCH=1659647777
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -102,7 +97,7 @@ export CFLAGS="$CFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sect
 export FCFLAGS="$FFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition -fstack-protector-strong -fzero-call-used-regs=used "
 export FFLAGS="$FFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition -fstack-protector-strong -fzero-call-used-regs=used "
 export CXXFLAGS="$CXXFLAGS -O3 -Os -fdata-sections -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition -fstack-protector-strong -fzero-call-used-regs=used "
-%reconfigure --disable-static --enable-no-install-program=kill,groups --enable-single-binary=symlinks --enable-single-binary-exceptions=expr,factor,rm
+%reconfigure --disable-static --enable-no-install-program=kill,groups --enable-single-binary=symlinks --enable-single-binary-exceptions=expr,factor --enable-static
 make  %{?_smp_mflags}
 
 %check
@@ -113,10 +108,10 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make %{?_smp_mflags} check
 
 %install
-export SOURCE_DATE_EPOCH=1650136831
+export SOURCE_DATE_EPOCH=1659647777
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/coreutils
-cp %{_builddir}/coreutils-9.1/COPYING %{buildroot}/usr/share/package-licenses/coreutils/31a3d460bb3c7d98845187c716a30db81c44b615
+cp %{_builddir}/coreutils-%{version}/COPYING %{buildroot}/usr/share/package-licenses/coreutils/31a3d460bb3c7d98845187c716a30db81c44b615
 %make_install
 %find_lang coreutils
 
@@ -204,7 +199,6 @@ cp %{_builddir}/coreutils-9.1/COPYING %{buildroot}/usr/share/package-licenses/co
 /usr/bin/sort
 /usr/bin/split
 /usr/bin/stat
-/usr/bin/stdbuf
 /usr/bin/stty
 /usr/bin/sum
 /usr/bin/sync
@@ -234,10 +228,6 @@ cp %{_builddir}/coreutils-9.1/COPYING %{buildroot}/usr/share/package-licenses/co
 %files info
 %defattr(0644,root,root,0755)
 /usr/share/info/coreutils.info
-
-%files libexec
-%defattr(-,root,root,-)
-/usr/libexec/coreutils/libstdbuf.so
 
 %files license
 %defattr(0644,root,root,0755)
@@ -323,7 +313,6 @@ cp %{_builddir}/coreutils-9.1/COPYING %{buildroot}/usr/share/package-licenses/co
 /usr/share/man/man1/sort.1
 /usr/share/man/man1/split.1
 /usr/share/man/man1/stat.1
-/usr/share/man/man1/stdbuf.1
 /usr/share/man/man1/stty.1
 /usr/share/man/man1/sum.1
 /usr/share/man/man1/sync.1
