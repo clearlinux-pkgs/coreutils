@@ -1,1 +1,1 @@
---enable-no-install-program=kill,groups --enable-single-binary=symlinks --enable-single-binary-exceptions=expr,factor --enable-static
+--enable-no-install-program=kill,groups --enable-single-binary=symlinks --enable-static
