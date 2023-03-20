@@ -16,14 +16,19 @@ Configure miss: acl_delete_file_np
 Configure miss: acl_free_text
 Configure miss: acl_to_short_text
 Configure miss: arithmetic hrtime_t
+Configure miss: bool, true, false
 Configure miss: cap_get_file in -lcap
 Configure miss: compiler option needed when checking for declarations
+Configure miss: compiler option needed when checking for future declarations
 Configure miss: crtdefs.h
 Configure miss: desired default level of POSIX conformance
 Configure miss: directio
+Configure miss: explicit_memset
 Configure miss: fake locale system (OpenBSD)
 Configure miss: fclonefileat
 Configure miss: fpurge
+Configure miss: gcc option to enable large file support
+Configure miss: gcc option to enable timestamps after Jan 2038
 Configure miss: gcc options needed to detect all undeclared functions
 Configure miss: getattrat
 Configure miss: getgrent_nomembers
@@ -39,6 +44,7 @@ Configure miss: library needed for semaphore functions
 Configure miss: listmntent
 Configure miss: major_t
 Configure miss: mbslen
+Configure miss: memset_explicit
 Configure miss: memset_s
 Configure miss: microuptime
 Configure miss: minor_t
@@ -57,6 +63,7 @@ Configure miss: selinux/selinux.h
 Configure miss: sig2str
 Configure miss: smack_new_label_from_self in -lsmack
 Configure miss: statfs that truncates block counts
+Configure miss: stdckdint.h
 Configure miss: stime
 Configure miss: strerror_r with POSIX signature
 Configure miss: stropts.h
@@ -79,6 +86,7 @@ Configure miss: sysctl
 Configure miss: sysmp
 Configure miss: timezone_t
 Configure miss: whether C compiler handles -errwarn
+Configure miss: whether SEEK_DATA works but is incompatible with GNU
 Configure miss: whether __sys_siglist is declared
 Configure miss: whether _sys_siglist is declared
 Configure miss: whether fflush works on input streams
