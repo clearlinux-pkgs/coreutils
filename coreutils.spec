@@ -7,7 +7,7 @@
 #
 Name     : coreutils
 Version  : 9.2
-Release  : 64
+Release  : 65
 URL      : https://mirrors.kernel.org/gnu/coreutils/coreutils-9.2.tar.xz
 Source0  : https://mirrors.kernel.org/gnu/coreutils/coreutils-9.2.tar.xz
 Source1  : https://mirrors.kernel.org/gnu/coreutils/coreutils-9.2.tar.xz.sig
@@ -83,6 +83,9 @@ man components for the coreutils package.
 %setup -q -n coreutils-9.2
 cd %{_builddir}/coreutils-9.2
 %patch1 -p1
+pushd ..
+cp -a coreutils-9.2 buildavx2
+popd
 
 %build
 ## build_prepend content
@@ -92,17 +95,36 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1679345073
+export SOURCE_DATE_EPOCH=1684513201
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
-export CFLAGS="$CFLAGS -O3 -Os -fdata-sections -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition -fstack-protector-strong -fzero-call-used-regs=used -g1 -gno-column-info -gno-variable-location-views -gz "
-export FCFLAGS="$FFLAGS -O3 -Os -fdata-sections -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition -fstack-protector-strong -fzero-call-used-regs=used -g1 -gno-column-info -gno-variable-location-views -gz "
-export FFLAGS="$FFLAGS -O3 -Os -fdata-sections -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition -fstack-protector-strong -fzero-call-used-regs=used -g1 -gno-column-info -gno-variable-location-views -gz "
-export CXXFLAGS="$CXXFLAGS -O3 -Os -fdata-sections -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition -fstack-protector-strong -fzero-call-used-regs=used -g1 -gno-column-info -gno-variable-location-views -gz "
-%reconfigure --disable-static --enable-no-install-program=kill,groups --enable-single-binary=symlinks --enable-static
+export CFLAGS="$CFLAGS -O3 -Os -fdata-sections -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition -fstack-protector-strong -fzero-call-used-regs=used -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+export FCFLAGS="$FFLAGS -O3 -Os -fdata-sections -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition -fstack-protector-strong -fzero-call-used-regs=used -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+export FFLAGS="$FFLAGS -O3 -Os -fdata-sections -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition -fstack-protector-strong -fzero-call-used-regs=used -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+export CXXFLAGS="$CXXFLAGS -O3 -Os -fdata-sections -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -ffunction-sections -flto=auto -fno-semantic-interposition -fstack-protector-strong -fzero-call-used-regs=used -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+%reconfigure --disable-static --enable-no-install-program=kill,groups \
+--enable-single-binary=symlinks \
+--enable-static \
+--enable-single-binary-exceptions=id
 make  %{?_smp_mflags}
+unset PKG_CONFIG_PATH
+pushd ../buildavx2/
+## build_prepend content
+CFLAGS="$CFLAGS -static"
+## build_prepend end
+export CFLAGS="$CFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3"
+export CXXFLAGS="$CXXFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3"
+export FFLAGS="$FFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3"
+export FCFLAGS="$FCFLAGS -m64 -march=x86-64-v3"
+export LDFLAGS="$LDFLAGS -m64 -march=x86-64-v3"
+%reconfigure --disable-static --enable-no-install-program=kill,groups \
+--enable-single-binary=symlinks \
+--enable-static \
+--enable-single-binary-exceptions=id
+make  %{?_smp_mflags}
+popd
 
 %check
 export LANG=C.UTF-8
@@ -110,20 +132,130 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 make %{?_smp_mflags} check || :
+cd ../buildavx2;
+make %{?_smp_mflags} check || : || :
 
 %install
-export SOURCE_DATE_EPOCH=1679345073
+export SOURCE_DATE_EPOCH=1684513201
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/coreutils
 cp %{_builddir}/coreutils-%{version}/COPYING %{buildroot}/usr/share/package-licenses/coreutils/31a3d460bb3c7d98845187c716a30db81c44b615 || :
+pushd ../buildavx2/
+%make_install_v3
+popd
 %make_install
 %find_lang coreutils
+/usr/bin/elf-move.py avx2 %{buildroot}-v3 %{buildroot} %{buildroot}/usr/share/clear/filemap/filemap-%{name}
 
 %files
 %defattr(-,root,root,-)
 
 %files bin
 %defattr(-,root,root,-)
+/V3/usr/bin/[
+/V3/usr/bin/b2sum
+/V3/usr/bin/base32
+/V3/usr/bin/base64
+/V3/usr/bin/basename
+/V3/usr/bin/basenc
+/V3/usr/bin/cat
+/V3/usr/bin/chcon
+/V3/usr/bin/chgrp
+/V3/usr/bin/chmod
+/V3/usr/bin/chown
+/V3/usr/bin/chroot
+/V3/usr/bin/cksum
+/V3/usr/bin/comm
+/V3/usr/bin/coreutils
+/V3/usr/bin/cp
+/V3/usr/bin/csplit
+/V3/usr/bin/cut
+/V3/usr/bin/date
+/V3/usr/bin/dd
+/V3/usr/bin/df
+/V3/usr/bin/dir
+/V3/usr/bin/dircolors
+/V3/usr/bin/dirname
+/V3/usr/bin/du
+/V3/usr/bin/echo
+/V3/usr/bin/env
+/V3/usr/bin/expand
+/V3/usr/bin/expr
+/V3/usr/bin/factor
+/V3/usr/bin/false
+/V3/usr/bin/fmt
+/V3/usr/bin/fold
+/V3/usr/bin/head
+/V3/usr/bin/hostid
+/V3/usr/bin/id
+/V3/usr/bin/install
+/V3/usr/bin/join
+/V3/usr/bin/link
+/V3/usr/bin/ln
+/V3/usr/bin/logname
+/V3/usr/bin/ls
+/V3/usr/bin/md5sum
+/V3/usr/bin/mkdir
+/V3/usr/bin/mkfifo
+/V3/usr/bin/mknod
+/V3/usr/bin/mktemp
+/V3/usr/bin/mv
+/V3/usr/bin/nice
+/V3/usr/bin/nl
+/V3/usr/bin/nohup
+/V3/usr/bin/nproc
+/V3/usr/bin/numfmt
+/V3/usr/bin/od
+/V3/usr/bin/paste
+/V3/usr/bin/pathchk
+/V3/usr/bin/pinky
+/V3/usr/bin/pr
+/V3/usr/bin/printenv
+/V3/usr/bin/printf
+/V3/usr/bin/ptx
+/V3/usr/bin/pwd
+/V3/usr/bin/readlink
+/V3/usr/bin/realpath
+/V3/usr/bin/rm
+/V3/usr/bin/rmdir
+/V3/usr/bin/runcon
+/V3/usr/bin/seq
+/V3/usr/bin/sha1sum
+/V3/usr/bin/sha224sum
+/V3/usr/bin/sha256sum
+/V3/usr/bin/sha384sum
+/V3/usr/bin/sha512sum
+/V3/usr/bin/shred
+/V3/usr/bin/shuf
+/V3/usr/bin/sleep
+/V3/usr/bin/sort
+/V3/usr/bin/split
+/V3/usr/bin/stat
+/V3/usr/bin/stty
+/V3/usr/bin/sum
+/V3/usr/bin/sync
+/V3/usr/bin/tac
+/V3/usr/bin/tail
+/V3/usr/bin/tee
+/V3/usr/bin/test
+/V3/usr/bin/timeout
+/V3/usr/bin/touch
+/V3/usr/bin/tr
+/V3/usr/bin/true
+/V3/usr/bin/truncate
+/V3/usr/bin/tsort
+/V3/usr/bin/tty
+/V3/usr/bin/uname
+/V3/usr/bin/unexpand
+/V3/usr/bin/uniq
+/V3/usr/bin/unlink
+/V3/usr/bin/uptime
+/V3/usr/bin/users
+/V3/usr/bin/vdir
+/V3/usr/bin/wc
+/V3/usr/bin/who
+/V3/usr/bin/whoami
+/V3/usr/bin/yes
 /usr/bin/[
 /usr/bin/b2sum
 /usr/bin/base32

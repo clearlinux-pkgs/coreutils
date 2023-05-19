@@ -1,114 +1,228 @@
 Configure miss: 32-bit host C ABI
+Configure miss: 32-bit host C ABI
+Configure miss: ACL_TYPE_EXTENDED
 Configure miss: ACL_TYPE_EXTENDED
 Configure miss: CFLocaleCopyPreferredLanguages
+Configure miss: CFLocaleCopyPreferredLanguages
+Configure miss: OS.h
 Configure miss: OS.h
 Configure miss: Solaris 11.4 locale system
+Configure miss: Solaris 11.4 locale system
+Configure miss: __freadahead
 Configure miss: __freadahead
 Configure miss: __freadptr
+Configure miss: __freadptr
+Configure miss: __freadptrinc
 Configure miss: __freadptrinc
 Configure miss: __fseterr
+Configure miss: __fseterr
+Configure miss: __xpg4
 Configure miss: __xpg4
 Configure miss: _fseeki64
+Configure miss: _fseeki64
+Configure miss: acl_copy_ext_native
 Configure miss: acl_copy_ext_native
 Configure miss: acl_create_entry_np
+Configure miss: acl_create_entry_np
+Configure miss: acl_delete_fd_np
 Configure miss: acl_delete_fd_np
 Configure miss: acl_delete_file_np
+Configure miss: acl_delete_file_np
+Configure miss: acl_free_text
 Configure miss: acl_free_text
 Configure miss: acl_to_short_text
+Configure miss: acl_to_short_text
+Configure miss: arithmetic hrtime_t
 Configure miss: arithmetic hrtime_t
 Configure miss: bool, true, false
+Configure miss: bool, true, false
+Configure miss: cap_get_file in -lcap
 Configure miss: cap_get_file in -lcap
 Configure miss: compiler option needed when checking for declarations
+Configure miss: compiler option needed when checking for declarations
+Configure miss: compiler option needed when checking for future declarations
 Configure miss: compiler option needed when checking for future declarations
 Configure miss: crtdefs.h
+Configure miss: crtdefs.h
+Configure miss: desired default level of POSIX conformance
 Configure miss: desired default level of POSIX conformance
 Configure miss: directio
+Configure miss: directio
+Configure miss: explicit_memset
 Configure miss: explicit_memset
 Configure miss: fake locale system (OpenBSD)
+Configure miss: fake locale system (OpenBSD)
+Configure miss: fclonefileat
 Configure miss: fclonefileat
 Configure miss: fpurge
+Configure miss: fpurge
+Configure miss: gcc option to enable large file support
 Configure miss: gcc option to enable large file support
 Configure miss: gcc option to enable timestamps after Jan 2038
+Configure miss: gcc option to enable timestamps after Jan 2038
+Configure miss: gcc options needed to detect all undeclared functions
 Configure miss: gcc options needed to detect all undeclared functions
 Configure miss: getattrat
+Configure miss: getattrat
+Configure miss: getgrent_nomembers
 Configure miss: getgrent_nomembers
 Configure miss: getgrgid_nomembers
+Configure miss: getgrgid_nomembers
+Configure miss: getgrnam_nomembers
 Configure miss: getgrnam_nomembers
 Configure miss: getppriv
+Configure miss: getppriv
+Configure miss: hurd.h
 Configure miss: hurd.h
 Configure miss: ioctl with POSIX signature
+Configure miss: ioctl with POSIX signature
+Configure miss: isapipe
 Configure miss: isapipe
 Configure miss: libgmp
+Configure miss: libgmp
+Configure miss: library containing setfilecon
 Configure miss: library containing setfilecon
 Configure miss: library needed for semaphore functions
+Configure miss: library needed for semaphore functions
+Configure miss: listmntent
 Configure miss: listmntent
 Configure miss: major_t
+Configure miss: major_t
+Configure miss: mbslen
 Configure miss: mbslen
 Configure miss: memset_explicit
+Configure miss: memset_explicit
+Configure miss: memset_s
 Configure miss: memset_s
 Configure miss: microuptime
+Configure miss: microuptime
+Configure miss: minor_t
 Configure miss: minor_t
 Configure miss: mntctl function and struct vmount
+Configure miss: mntctl function and struct vmount
+Configure miss: mode_to_security_class
 Configure miss: mode_to_security_class
 Configure miss: mquery
+Configure miss: mquery
+Configure miss: nanouptime
 Configure miss: nanouptime
 Configure miss: nfs/vfs.h
+Configure miss: nfs/vfs.h
+Configure miss: obstacks that work with any size object
 Configure miss: obstacks that work with any size object
 Configure miss: priv.h
+Configure miss: priv.h
+Configure miss: pstat_getprocvm
 Configure miss: pstat_getprocvm
 Configure miss: pstat_getstatic
+Configure miss: pstat_getstatic
+Configure miss: sched_getaffinity_np
 Configure miss: sched_getaffinity_np
 Configure miss: selinux/flask.h
+Configure miss: selinux/flask.h
+Configure miss: selinux/selinux.h
 Configure miss: selinux/selinux.h
 Configure miss: sig2str
+Configure miss: sig2str
+Configure miss: smack_new_label_from_self in -lsmack
 Configure miss: smack_new_label_from_self in -lsmack
 Configure miss: statfs that truncates block counts
+Configure miss: statfs that truncates block counts
+Configure miss: stdckdint.h
 Configure miss: stdckdint.h
 Configure miss: stime
+Configure miss: stime
+Configure miss: strerror_r with POSIX signature
 Configure miss: strerror_r with POSIX signature
 Configure miss: stropts.h
+Configure miss: stropts.h
+Configure miss: struct fsstat.f_fstypename
 Configure miss: struct fsstat.f_fstypename
 Configure miss: struct stat.st_author
+Configure miss: struct stat.st_author
+Configure miss: struct statfs.f_namemax
 Configure miss: struct statfs.f_namemax
 Configure miss: struct statvfs.f_type
+Configure miss: struct statvfs.f_type
+Configure miss: struct utmp.ut_exit.ut_exit
 Configure miss: struct utmp.ut_exit.ut_exit
 Configure miss: struct utmp.ut_exit.ut_termination
+Configure miss: struct utmp.ut_exit.ut_termination
+Configure miss: struct utmpx.ut_exit.ut_exit
 Configure miss: struct utmpx.ut_exit.ut_exit
 Configure miss: struct utmpx.ut_exit.ut_termination
+Configure miss: struct utmpx.ut_exit.ut_termination
+Configure miss: sys/fs/s5param.h
 Configure miss: sys/fs/s5param.h
 Configure miss: sys/fs_types.h
+Configure miss: sys/fs_types.h
+Configure miss: sys/mntent.h
 Configure miss: sys/mntent.h
 Configure miss: sys/sysctl.h
+Configure miss: sys/sysctl.h
+Configure miss: sys/sysmp.h
 Configure miss: sys/sysmp.h
 Configure miss: sys/systemcfg.h
+Configure miss: sys/systemcfg.h
+Configure miss: sys/table.h
 Configure miss: sys/table.h
 Configure miss: sysctl
+Configure miss: sysctl
+Configure miss: sysmp
 Configure miss: sysmp
 Configure miss: timezone_t
+Configure miss: timezone_t
+Configure miss: whether C compiler handles -errwarn
 Configure miss: whether C compiler handles -errwarn
 Configure miss: whether SEEK_DATA works but is incompatible with GNU
+Configure miss: whether SEEK_DATA works but is incompatible with GNU
+Configure miss: whether __sys_siglist is declared
 Configure miss: whether __sys_siglist is declared
 Configure miss: whether _sys_siglist is declared
+Configure miss: whether _sys_siglist is declared
+Configure miss: whether fflush works on input streams
 Configure miss: whether fflush works on input streams
 Configure miss: whether fpurge is declared
+Configure miss: whether fpurge is declared
+Configure miss: whether gai_strerrorA is declared
 Configure miss: whether gai_strerrorA is declared
 Configure miss: whether gethrtime is declared
+Configure miss: whether gethrtime is declared
+Configure miss: whether link(2) dereferences a symlink
 Configure miss: whether link(2) dereferences a symlink
 Configure miss: whether localtime caches TZ
+Configure miss: whether localtime caches TZ
+Configure miss: whether mbrtowc stores incomplete characters
 Configure miss: whether mbrtowc stores incomplete characters
 Configure miss: whether mbswidth is declared in <wchar.h>
+Configure miss: whether mbswidth is declared in <wchar.h>
+Configure miss: whether openssl is GPL compatible
 Configure miss: whether openssl is GPL compatible
 Configure miss: whether printf supports the 'n' directive
+Configure miss: whether printf supports the 'n' directive
+Configure miss: whether pthread_rwlock_rdlock prefers a writer to a reader
 Configure miss: whether pthread_rwlock_rdlock prefers a writer to a reader
 Configure miss: whether pthread_sigmask is a macro
+Configure miss: whether pthread_sigmask is a macro
+Configure miss: whether strmode is declared
 Configure miss: whether strmode is declared
 Configure miss: whether sys_siglist is declared
+Configure miss: whether sys_siglist is declared
+Configure miss: whether termios.h needs _XOPEN_SOURCE
 Configure miss: whether termios.h needs _XOPEN_SOURCE
 Configure miss: whether the compiler is clang
+Configure miss: whether the compiler is clang
+Configure miss: whether the compiler produces multi-arch binaries
 Configure miss: whether the compiler produces multi-arch binaries
 Configure miss: whether this system supports file names of any length
+Configure miss: whether this system supports file names of any length
+Configure miss: whether this system supports stdbuf
 Configure miss: whether this system supports stdbuf
 Configure miss: whether to use statvfs64
+Configure miss: whether to use statvfs64
+Configure miss: whether use of TIOCGWINSZ requires termios.h
 Configure miss: whether use of TIOCGWINSZ requires termios.h
 Configure miss: whether use of struct winsize requires sys/ptem.h
+Configure miss: whether use of struct winsize requires sys/ptem.h
+Configure miss: working nanosleep
 Configure miss: working nanosleep

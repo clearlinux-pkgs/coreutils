@@ -1,1 +1,4 @@
---enable-no-install-program=kill,groups --enable-single-binary=symlinks --enable-static
+--enable-no-install-program=kill,groups 
+--enable-single-binary=symlinks 
+--enable-static
+--enable-single-binary-exceptions=id
