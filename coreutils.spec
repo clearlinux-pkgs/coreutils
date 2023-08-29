@@ -6,11 +6,11 @@
 # Source0 file verified with key 0xDF6FD971306037D9 (P@draigBrady.com)
 #
 Name     : coreutils
-Version  : 9.2
-Release  : 74
-URL      : https://mirrors.kernel.org/gnu/coreutils/coreutils-9.2.tar.xz
-Source0  : https://mirrors.kernel.org/gnu/coreutils/coreutils-9.2.tar.xz
-Source1  : https://mirrors.kernel.org/gnu/coreutils/coreutils-9.2.tar.xz.sig
+Version  : 9.4
+Release  : 75
+URL      : https://mirrors.kernel.org/gnu/coreutils/coreutils-9.4.tar.xz
+Source0  : https://mirrors.kernel.org/gnu/coreutils/coreutils-9.4.tar.xz
+Source1  : https://mirrors.kernel.org/gnu/coreutils/coreutils-9.4.tar.xz.sig
 Summary  : No detailed summary available
 Group    : Development/Tools
 License  : GPL-3.0 GPL-3.0+
@@ -80,11 +80,11 @@ man components for the coreutils package.
 
 
 %prep
-%setup -q -n coreutils-9.2
-cd %{_builddir}/coreutils-9.2
-%patch1 -p1
+%setup -q -n coreutils-9.4
+cd %{_builddir}/coreutils-9.4
+%patch -P 1 -p1
 pushd ..
-cp -a coreutils-9.2 buildavx2
+cp -a coreutils-9.4 buildavx2
 popd
 
 %build
@@ -95,7 +95,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1685492740
+export SOURCE_DATE_EPOCH=1693340642
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -136,7 +136,7 @@ cd ../buildavx2;
 make %{?_smp_mflags} check || : || :
 
 %install
-export SOURCE_DATE_EPOCH=1685492740
+export SOURCE_DATE_EPOCH=1693340642
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/coreutils
 cp %{_builddir}/coreutils-%{version}/COPYING %{buildroot}/usr/share/package-licenses/coreutils/31a3d460bb3c7d98845187c716a30db81c44b615 || :

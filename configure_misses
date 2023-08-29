@@ -2,6 +2,8 @@ Configure miss: 32-bit host C ABI
 Configure miss: 32-bit host C ABI
 Configure miss: ACL_TYPE_EXTENDED
 Configure miss: ACL_TYPE_EXTENDED
+Configure miss: C nullptr
+Configure miss: C nullptr
 Configure miss: CFLocaleCopyPreferredLanguages
 Configure miss: CFLocaleCopyPreferredLanguages
 Configure miss: OS.h
@@ -56,10 +58,10 @@ Configure miss: fclonefileat
 Configure miss: fclonefileat
 Configure miss: fpurge
 Configure miss: fpurge
+Configure miss: gcc option for timestamps after 2038
+Configure miss: gcc option for timestamps after 2038
 Configure miss: gcc option to enable large file support
 Configure miss: gcc option to enable large file support
-Configure miss: gcc option to enable timestamps after Jan 2038
-Configure miss: gcc option to enable timestamps after Jan 2038
 Configure miss: gcc options needed to detect all undeclared functions
 Configure miss: gcc options needed to detect all undeclared functions
 Configure miss: getattrat
@@ -144,10 +146,6 @@ Configure miss: struct statfs.f_namemax
 Configure miss: struct statfs.f_namemax
 Configure miss: struct statvfs.f_type
 Configure miss: struct statvfs.f_type
-Configure miss: struct utmp.ut_exit.ut_exit
-Configure miss: struct utmp.ut_exit.ut_exit
-Configure miss: struct utmp.ut_exit.ut_termination
-Configure miss: struct utmp.ut_exit.ut_termination
 Configure miss: struct utmpx.ut_exit.ut_exit
 Configure miss: struct utmpx.ut_exit.ut_exit
 Configure miss: struct utmpx.ut_exit.ut_termination
@@ -172,6 +170,8 @@ Configure miss: sysmp
 Configure miss: sysmp
 Configure miss: timezone_t
 Configure miss: timezone_t
+Configure miss: unreachable
+Configure miss: unreachable
 Configure miss: whether C compiler handles -errwarn
 Configure miss: whether C compiler handles -errwarn
 Configure miss: whether SEEK_DATA works but is incompatible with GNU
@@ -180,6 +180,8 @@ Configure miss: whether __sys_siglist is declared
 Configure miss: whether __sys_siglist is declared
 Configure miss: whether _sys_siglist is declared
 Configure miss: whether _sys_siglist is declared
+Configure miss: whether btowc is consistent with mbrtowc in the C locale
+Configure miss: whether btowc is consistent with mbrtowc in the C locale
 Configure miss: whether fflush works on input streams
 Configure miss: whether fflush works on input streams
 Configure miss: whether fpurge is declared
@@ -198,6 +200,8 @@ Configure miss: whether mbswidth is declared in <wchar.h>
 Configure miss: whether mbswidth is declared in <wchar.h>
 Configure miss: whether openssl is GPL compatible
 Configure miss: whether openssl is GPL compatible
+Configure miss: whether printf supports the 'lc' directive correctly
+Configure miss: whether printf supports the 'lc' directive correctly
 Configure miss: whether printf supports the 'n' directive
 Configure miss: whether printf supports the 'n' directive
 Configure miss: whether pthread_rwlock_rdlock prefers a writer to a reader
@@ -220,6 +224,8 @@ Configure miss: whether this system supports stdbuf
 Configure miss: whether this system supports stdbuf
 Configure miss: whether to use statvfs64
 Configure miss: whether to use statvfs64
+Configure miss: whether to use systemd APIs
+Configure miss: whether to use systemd APIs
 Configure miss: whether use of TIOCGWINSZ requires termios.h
 Configure miss: whether use of TIOCGWINSZ requires termios.h
 Configure miss: whether use of struct winsize requires sys/ptem.h
