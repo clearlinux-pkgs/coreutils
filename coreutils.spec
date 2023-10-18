@@ -7,7 +7,7 @@
 #
 Name     : coreutils
 Version  : 9.4
-Release  : 80
+Release  : 81
 URL      : https://mirrors.kernel.org/gnu/coreutils/coreutils-9.4.tar.xz
 Source0  : https://mirrors.kernel.org/gnu/coreutils/coreutils-9.4.tar.xz
 Source1  : https://mirrors.kernel.org/gnu/coreutils/coreutils-9.4.tar.xz.sig
