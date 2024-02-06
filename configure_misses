@@ -18,6 +18,8 @@ Configure miss: __freadptrinc
 Configure miss: __freadptrinc
 Configure miss: __fseterr
 Configure miss: __fseterr
+Configure miss: __mktime_internal
+Configure miss: __mktime_internal
 Configure miss: __xpg4
 Configure miss: __xpg4
 Configure miss: _fseeki64
@@ -38,8 +40,6 @@ Configure miss: arithmetic hrtime_t
 Configure miss: arithmetic hrtime_t
 Configure miss: bool, true, false
 Configure miss: bool, true, false
-Configure miss: cap_get_file in -lcap
-Configure miss: cap_get_file in -lcap
 Configure miss: compiler option needed when checking for declarations
 Configure miss: compiler option needed when checking for declarations
 Configure miss: compiler option needed when checking for future declarations
@@ -80,8 +80,6 @@ Configure miss: ioctl with POSIX signature
 Configure miss: ioctl with POSIX signature
 Configure miss: isapipe
 Configure miss: isapipe
-Configure miss: libgmp
-Configure miss: libgmp
 Configure miss: library containing setfilecon
 Configure miss: library containing setfilecon
 Configure miss: library needed for semaphore functions
@@ -142,10 +140,6 @@ Configure miss: struct fsstat.f_fstypename
 Configure miss: struct fsstat.f_fstypename
 Configure miss: struct stat.st_author
 Configure miss: struct stat.st_author
-Configure miss: struct statfs.f_namemax
-Configure miss: struct statfs.f_namemax
-Configure miss: struct statvfs.f_type
-Configure miss: struct statvfs.f_type
 Configure miss: struct utmpx.ut_exit.ut_exit
 Configure miss: struct utmpx.ut_exit.ut_exit
 Configure miss: struct utmpx.ut_exit.ut_termination
@@ -220,8 +214,6 @@ Configure miss: whether the compiler produces multi-arch binaries
 Configure miss: whether the compiler produces multi-arch binaries
 Configure miss: whether this system supports file names of any length
 Configure miss: whether this system supports file names of any length
-Configure miss: whether this system supports stdbuf
-Configure miss: whether this system supports stdbuf
 Configure miss: whether to use statvfs64
 Configure miss: whether to use statvfs64
 Configure miss: whether to use systemd APIs
