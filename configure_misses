@@ -116,6 +116,8 @@ Configure miss: pstat_getprocvm
 Configure miss: pstat_getprocvm
 Configure miss: pstat_getstatic
 Configure miss: pstat_getstatic
+Configure miss: random.h
+Configure miss: random.h
 Configure miss: sched_getaffinity_np
 Configure miss: sched_getaffinity_np
 Configure miss: selinux/flask.h
@@ -170,10 +172,6 @@ Configure miss: whether C compiler handles -errwarn
 Configure miss: whether C compiler handles -errwarn
 Configure miss: whether SEEK_DATA works but is incompatible with GNU
 Configure miss: whether SEEK_DATA works but is incompatible with GNU
-Configure miss: whether __sys_siglist is declared
-Configure miss: whether __sys_siglist is declared
-Configure miss: whether _sys_siglist is declared
-Configure miss: whether _sys_siglist is declared
 Configure miss: whether btowc is consistent with mbrtowc in the C locale
 Configure miss: whether btowc is consistent with mbrtowc in the C locale
 Configure miss: whether fflush works on input streams
@@ -194,8 +192,6 @@ Configure miss: whether mbswidth is declared in <wchar.h>
 Configure miss: whether mbswidth is declared in <wchar.h>
 Configure miss: whether openssl is GPL compatible
 Configure miss: whether openssl is GPL compatible
-Configure miss: whether printf supports the 'lc' directive correctly
-Configure miss: whether printf supports the 'lc' directive correctly
 Configure miss: whether printf supports the 'n' directive
 Configure miss: whether printf supports the 'n' directive
 Configure miss: whether pthread_rwlock_rdlock prefers a writer to a reader
@@ -204,8 +200,6 @@ Configure miss: whether pthread_sigmask is a macro
 Configure miss: whether pthread_sigmask is a macro
 Configure miss: whether strmode is declared
 Configure miss: whether strmode is declared
-Configure miss: whether sys_siglist is declared
-Configure miss: whether sys_siglist is declared
 Configure miss: whether termios.h needs _XOPEN_SOURCE
 Configure miss: whether termios.h needs _XOPEN_SOURCE
 Configure miss: whether the compiler is clang
