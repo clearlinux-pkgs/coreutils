@@ -9,7 +9,7 @@
 #
 Name     : coreutils
 Version  : 9.6
-Release  : 180
+Release  : 181
 URL      : https://mirrors.kernel.org/gnu/coreutils/coreutils-9.6.tar.gz
 Source0  : https://mirrors.kernel.org/gnu/coreutils/coreutils-9.6.tar.gz
 Source1  : https://mirrors.kernel.org/gnu/coreutils/coreutils-9.6.tar.gz.sig
