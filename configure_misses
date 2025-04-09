@@ -52,8 +52,8 @@ Configure miss: directio
 Configure miss: directio
 Configure miss: explicit_memset
 Configure miss: explicit_memset
-Configure miss: fake locale system (OpenBSD)
-Configure miss: fake locale system (OpenBSD)
+Configure miss: fake locale system (OpenBSD, Android)
+Configure miss: fake locale system (OpenBSD, Android)
 Configure miss: fclonefileat
 Configure miss: fclonefileat
 Configure miss: fpurge
@@ -202,8 +202,12 @@ Configure miss: whether gai_strerrorA is declared
 Configure miss: whether gai_strerrorA is declared
 Configure miss: whether gethrtime is declared
 Configure miss: whether gethrtime is declared
+Configure miss: whether langinfo.h defines ABALTMON_1
+Configure miss: whether langinfo.h defines ABALTMON_1
 Configure miss: whether link(2) dereferences a symlink
 Configure miss: whether link(2) dereferences a symlink
+Configure miss: whether locale.h defines _locale_t
+Configure miss: whether locale.h defines _locale_t
 Configure miss: whether localtime caches TZ
 Configure miss: whether localtime caches TZ
 Configure miss: whether mbrtowc stores incomplete characters
